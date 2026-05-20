@@ -1460,6 +1460,56 @@ function setupDragDrop() {
 // ─── Clientes ──────────────────────────────────────────────────────────────
 const CLIENTS_KEY = '__clients__';
 
+const DEFAULT_CLIENTS = [
+  // Policlínicas
+  { client: 'Jacobina',               unit: 'Policlínica',       bank: 'BD_POLICLINICA_JACOBINA' },
+  { client: 'Senhor do Bonfim',       unit: 'Policlínica',       bank: 'BD_POLICLINICA_SENHOR_DO_BONFIM' },
+  // Câmaras
+  { client: 'Castro Alves',           unit: 'Câmara',            bank: 'BD_CASTRO_ALVES_CAMARA' },
+  { client: 'Madre de Deus',          unit: 'Câmara',            bank: 'BD_MADRE_DE_DEUS_CAMARA' },
+  { client: 'Miguel Calmon',          unit: 'Câmara',            bank: 'BD_MIGUEL_CALMON_CAMARA' },
+  { client: 'Santa Terezinha',        unit: 'Câmara',            bank: 'BD_SANTA_TEREZINHA_CAMARA' },
+  { client: 'Seabra',                 unit: 'Câmara',            bank: 'BD_SEABRA_CAMARA' },
+  // Prefeituras
+  { client: 'Almadina',               unit: 'Prefeitura',        bank: 'BD_ALMADINA' },
+  { client: 'Angical',                unit: 'Prefeitura',        bank: 'BD_ANGICAL' },
+  { client: 'Antônio Cardoso',        unit: 'Prefeitura',        bank: 'BD_ANTONIO_CARDOSO' },
+  { client: 'Breijões',               unit: 'Prefeitura',        bank: 'BD_BREJOES' },
+  { client: 'Cairu',                  unit: 'Prefeitura',        bank: 'BD_CAIRU' },
+  { client: 'Canarana',               unit: 'Prefeitura',        bank: 'BD_CANARANA' },
+  { client: 'Capim Grosso',           unit: 'Prefeitura',        bank: 'BD_CAPIM_GROSSO' },
+  { client: 'Castro Alves',           unit: 'Prefeitura',        bank: 'BD_CASTRO_ALVES' },
+  { client: 'Coaraci',                unit: 'Prefeitura',        bank: 'BD_COARACI' },
+  { client: 'Conceição da Feira',     unit: 'Prefeitura',        bank: 'BD_CONCEICAO_FEIRA' },
+  { client: 'Formosa do Rio Preto',   unit: 'Prefeitura',        bank: 'BD_FORMOSA_RIO_PRETO' },
+  { client: 'Ibitita',                unit: 'Prefeitura',        bank: 'BD_IBITITA' },
+  { client: 'Inhambupe',              unit: 'Prefeitura',        bank: 'BD_INHAMBUPE' },
+  { client: 'Irará',                  unit: 'Prefeitura',        bank: 'BD_IRARA' },
+  { client: 'Itagibá',               unit: 'Prefeitura',        bank: 'BD_ITAGIBA' },
+  { client: 'Jaguaripe',              unit: 'Prefeitura',        bank: 'BD_JAGUARIPE' },
+  { client: 'Jitauna',               unit: 'Prefeitura',        bank: 'BD_JITAUNA' },
+  { client: 'Lajedinho',              unit: 'Prefeitura',        bank: 'BD_LAJEDINHO' },
+  { client: 'Lauro de Freitas',       unit: 'Prefeitura',        bank: 'BD_LAURO_DE_FREITAS' },
+  { client: 'Maragogi',               unit: 'Prefeitura',        bank: 'BD_MARAGOGI' },
+  { client: 'Mirante',                unit: 'Prefeitura',        bank: 'BD_MIRANTE' },
+  { client: 'Mutuípe',               unit: 'Prefeitura',        bank: 'BD_MUTUIPE' },
+  { client: 'Nazaré',                unit: 'Prefeitura',        bank: 'BD_NAZARE' },
+  { client: 'Palmeiras',              unit: 'Prefeitura',        bank: 'BD_PALMEIRAS' },
+  { client: 'Penedo',                 unit: 'Prefeitura',        bank: 'BD_PENEDO' },
+  { client: 'Piritiba',               unit: 'Prefeitura',        bank: 'BD_PIRITIBA' },
+  { client: 'Pojuca',                 unit: 'Prefeitura',        bank: 'BD_POJUCA' },
+  { client: 'Ruy Barbosa',            unit: 'Prefeitura',        bank: 'BD_RUY_BARBOSA' },
+  { client: 'Seabra',                 unit: 'Prefeitura',        bank: 'BD_SEABRA' },
+  { client: 'Tancredo Neves',         unit: 'Prefeitura',        bank: 'BD_TANCREDO_NEVES' },
+  { client: 'Várzea Nova',           unit: 'Prefeitura',        bank: 'BD_VARZEA_NOVA' },
+  { client: 'Wenceslau Guimarães',   unit: 'Prefeitura',        bank: 'BD_WENCESLAU_GUIMARAES' },
+  // Teste / Homologação
+  { client: 'Apresentação',          unit: 'Teste/Homologação', bank: 'BD_APRESENTACAO' },
+  { client: 'Suporte',                unit: 'Teste/Homologação', bank: 'BD_SUPORTE' },
+  { client: 'Lauro de Freitas',       unit: 'Homologação',       bank: 'BD_LAURO_HOMOLOGACAO' },
+  { client: 'Emanuel',                unit: 'Teste',             bank: 'BD_TESTE_FORMOSA_RIO_PRETO' },
+];
+
 function loadClients() {
   const page = localPages[CLIENTS_KEY];
   if (!page) return [];
@@ -1588,6 +1638,7 @@ function renderClientsPanel() {
 }
 
 function showClientsPanel() {
+  if (loadClients().length === 0) saveClients([...DEFAULT_CLIENTS]);
   document.getElementById('clientsPanel').classList.add('visible');
   document.getElementById('editorScroll').style.display = 'none';
   document.getElementById('toolbar').style.display = 'none';
