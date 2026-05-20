@@ -1,9 +1,9 @@
-const http = require('http');
+const http  = require('http');
+const https = require('https');
 const WebSocket = require('ws');
 const fs = require('fs');
 
 const PORT = process.env.PORT || 1234;
-// Suporta tanto 'whitelist.json' quanto 'Whitelist.json' (compatibilidade Windows/Linux)
 const WHITELIST_FILE = fs.existsSync('Whitelist.json') ? 'Whitelist.json' : 'whitelist.json';
 
 function loadWhitelist() {
@@ -19,8 +19,73 @@ function saveWhitelist(wl) {
 
 let whitelist = loadWhitelist();
 
-// ─── Persistência de páginas ───────────────────────────────────────────────
-// Usa volume persistente do Railway (/data) se disponível, senão pasta local
+// ─── GitHub como banco de dados persistente ────────────────────────────────
+const GH_TOKEN = process.env.GITHUB_TOKEN || '';
+const GH_OWNER = 'Ellkaalmeida';
+const GH_REPO  = 'Manual_compragil';
+const GH_FILE  = 'data/pages.json';
+let   _ghSha   = null;
+let   _ghSaveTimer = null;
+
+function ghRequest(method, path, body) {
+  return new Promise((resolve, reject) => {
+    const payload = body ? JSON.stringify(body) : null;
+    const req = https.request({
+      hostname: 'api.github.com',
+      path,
+      method,
+      headers: {
+        'Authorization':  'token ' + GH_TOKEN,
+        'User-Agent':     'Manual-Compragil-Server',
+        'Accept':         'application/vnd.github.v3+json',
+        'Content-Type':   'application/json',
+        ...(payload ? { 'Content-Length': Buffer.byteLength(payload) } : {})
+      }
+    }, res => {
+      let d = '';
+      res.on('data', c => d += c);
+      res.on('end', () => { try { resolve(JSON.parse(d)); } catch { resolve({}); } });
+    });
+    req.on('error', reject);
+    if (payload) req.write(payload);
+    req.end();
+  });
+}
+
+async function loadFromGitHub() {
+  if (!GH_TOKEN) return null;
+  try {
+    const res = await ghRequest('GET', `/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}`);
+    if (res.content && res.sha) {
+      _ghSha = res.sha;
+      const data = JSON.parse(Buffer.from(res.content, 'base64').toString('utf8'));
+      console.log(`[github] ${Object.keys(data).length} páginas carregadas`);
+      return data;
+    }
+  } catch (e) { console.warn('[github] load:', e.message); }
+  return null;
+}
+
+function scheduleGitHubSave() {
+  if (!GH_TOKEN) return;
+  clearTimeout(_ghSaveTimer);
+  _ghSaveTimer = setTimeout(async () => {
+    try {
+      const content = Buffer.from(JSON.stringify(pages)).toString('base64');
+      const res = await ghRequest('PUT', `/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}`, {
+        message: 'auto-save: páginas do manual',
+        content,
+        ...(_ghSha ? { sha: _ghSha } : {})
+      });
+      if (res.content && res.content.sha) {
+        _ghSha = res.content.sha;
+        console.log('[github] páginas salvas com sucesso');
+      }
+    } catch (e) { console.error('[github] save error:', e.message); }
+  }, 30000); // Agrupa saves — máximo 1 commit a cada 30s
+}
+
+// ─── Persistência local (fallback) ────────────────────────────────────────
 const DATA_DIR   = fs.existsSync('/data') ? '/data' : '.';
 const PAGES_FILE = DATA_DIR + '/pages.json';
 
@@ -28,7 +93,7 @@ function loadPages() {
   try {
     if (fs.existsSync(PAGES_FILE)) {
       const data = JSON.parse(fs.readFileSync(PAGES_FILE, 'utf8'));
-      console.log(`[pages] ${Object.keys(data).length} páginas carregadas do disco`);
+      console.log(`[local] ${Object.keys(data).length} páginas carregadas do disco`);
       return data;
     }
   } catch (e) { console.error('Erro ao ler pages.json:', e.message); }
@@ -40,29 +105,36 @@ function savePages() {
   catch (e) { console.error('Erro ao salvar pages.json:', e.message); }
 }
 
-const pages   = loadPages();
+// Carrega local primeiro (rápido), depois sobrescreve com GitHub (persistente)
+const pages = loadPages();
 const clients = new Set();
 
+if (GH_TOKEN) {
+  loadFromGitHub().then(ghPages => {
+    if (ghPages && Object.keys(ghPages).length > 0) {
+      Object.assign(pages, ghPages);
+      savePages();
+      console.log('[github] dados restaurados com sucesso');
+    }
+  });
+}
+
+// ─── HTTP ──────────────────────────────────────────────────────────────────
 const server = http.createServer((req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  if (req.method === 'OPTIONS') {
-    res.writeHead(204); res.end(); return;
-  }
-
-  // Endpoint público: retorna a whitelist para validar login em qualquer máquina
+  if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
   if (req.url === '/whitelist') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(whitelist));
     return;
   }
-
   res.writeHead(200, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({ status: 'ok', clients: clients.size }));
 });
 
+// ─── WebSocket ─────────────────────────────────────────────────────────────
 const wss = new WebSocket.Server({ server });
 
 function broadcast(data, except = null) {
@@ -82,7 +154,6 @@ wss.on('connection', (ws) => {
   clients.add(ws);
   const serverEmpty = Object.keys(pages).length === 0;
   ws.send(JSON.stringify({ type: 'init', pages }));
-  // Se o servidor está vazio (reiniciou), pede imediatamente os dados ao cliente
   if (serverEmpty) ws.send(JSON.stringify({ type: 'request_pages' }));
 
   ws.on('message', (raw) => {
@@ -92,31 +163,29 @@ wss.on('connection', (ws) => {
       if (msg.type === 'join') {
         ws.userName  = msg.name;
         ws.userColor = msg.color || '#6366f1';
-        // Busca case-insensitive ("thales alexandre" encontra "Thales Alexandre")
         const joinNameLower = (msg.name || '').toLowerCase();
         const joinKey = Object.keys(whitelist).find(k => k.toLowerCase() === joinNameLower);
         ws.role = joinKey ? whitelist[joinKey] : 'viewer';
         console.log(`[+] ${ws.userName} -> ${ws.role}`);
-        // Envia whitelist completa para TODOS — cliente salva no localStorage
-        // Assim qualquer máquina fica sincronizada com a lista atual
         ws.send(JSON.stringify({ type: 'confirm_role', role: ws.role, whitelist }));
         broadcast({ type: 'online', users: onlineList() });
         ws.send(JSON.stringify({ type: 'online', users: onlineList() }));
-        // Se o servidor ainda está vazio após o join, pede novamente os dados
         if (Object.keys(pages).length === 0) ws.send(JSON.stringify({ type: 'request_pages' }));
       }
 
       if (msg.type === 'pages_dump') {
-        // Cliente enviou todos os seus dados — popula o servidor se estiver vazio
         const dump = msg.pages || {};
         let count = 0;
         Object.entries(dump).forEach(([key, val]) => {
           if (!pages[key] && val && (val.content || val.title)) {
-            pages[key] = val;
-            count++;
+            pages[key] = val; count++;
           }
         });
-        if (count > 0) { savePages(); console.log(`[pages_dump] ${count} páginas restauradas de ${ws.userName}`); }
+        if (count > 0) {
+          savePages();
+          scheduleGitHubSave();
+          console.log(`[pages_dump] ${count} páginas restauradas de ${ws.userName}`);
+        }
       }
 
       if (msg.type === 'manage_users') {
@@ -134,6 +203,7 @@ wss.on('connection', (ws) => {
         if (ws.role === 'viewer') return;
         pages[msg.pageKey] = { title: msg.title, content: msg.content, icon: msg.icon, intro: msg.intro || '', links: msg.links || [] };
         savePages();
+        scheduleGitHubSave();
         broadcast({ type: 'page_update', pageKey: msg.pageKey, title: msg.title, content: msg.content, icon: msg.icon, intro: msg.intro || '', links: msg.links || [], author: ws.userName, color: ws.userColor }, ws);
       }
 
