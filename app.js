@@ -57,9 +57,30 @@ const localPages = (() => {
   return {};
 })();
 
+function stripImages(html) {
+  // Remove src de imagens base64 para não estourar o localStorage (ficam só no servidor)
+  return (html || '').replace(/(<img[^>]*)\ssrc="data:[^"]*"/gi, '$1 src=""');
+}
+
 function saveLocalPages() {
-  try { localStorage.setItem('compragil_pages', JSON.stringify(localPages)); }
-  catch(e) { console.warn('Erro ao salvar páginas local:', e); }
+  try {
+    // Salva versão sem base64 para não estourar quota do localStorage
+    const slim = {};
+    Object.entries(localPages).forEach(([k, v]) => {
+      slim[k] = { ...v, content: stripImages(v.content) };
+    });
+    localStorage.setItem('compragil_pages', JSON.stringify(slim));
+  } catch(e) {
+    console.warn('Erro ao salvar páginas local:', e);
+    // Tenta liberar espaço removendo conteúdo grande e salvando só títulos/ícones
+    try {
+      const minimal = {};
+      Object.entries(localPages).forEach(([k, v]) => {
+        minimal[k] = { title: v.title, icon: v.icon };
+      });
+      localStorage.setItem('compragil_pages', JSON.stringify(minimal));
+    } catch(e2) { console.warn('localStorage cheio mesmo após limpeza:', e2); }
+  }
 }
 
 // ─── Estilos ───────────────────────────────────────────────────────────────
