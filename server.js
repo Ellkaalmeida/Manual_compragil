@@ -119,19 +119,54 @@ if (GH_TOKEN) {
   });
 }
 
-// ─── HTTP ──────────────────────────────────────────────────────────────────
+// ─── HTTP + Arquivos estáticos ─────────────────────────────────────────────
+const path = require('path');
+const MIME = {
+  '.html': 'text/html; charset=utf-8',
+  '.js':   'application/javascript; charset=utf-8',
+  '.json': 'application/json',
+  '.png':  'image/png',
+  '.jpg':  'image/jpeg',
+  '.ico':  'image/x-icon',
+  '.css':  'text/css',
+};
+
 const server = http.createServer((req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
+
   if (req.url === '/whitelist') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(whitelist));
     return;
   }
-  res.writeHead(200, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify({ status: 'ok', clients: clients.size }));
+
+  if (req.url === '/status') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ status: 'ok', clients: clients.size }));
+    return;
+  }
+
+  // Serve arquivos estáticos (frontend)
+  let filePath = req.url === '/' ? '/Index.html' : req.url;
+  filePath = path.join(__dirname, filePath);
+  const ext = path.extname(filePath).toLowerCase();
+  if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+    res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream' });
+    fs.createReadStream(filePath).pipe(res);
+    return;
+  }
+
+  // Fallback: serve o Index.html para qualquer rota desconhecida
+  const index = path.join(__dirname, 'Index.html');
+  if (fs.existsSync(index)) {
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    fs.createReadStream(index).pipe(res);
+  } else {
+    res.writeHead(404); res.end('Not found');
+  }
 });
 
 // ─── WebSocket ─────────────────────────────────────────────────────────────
