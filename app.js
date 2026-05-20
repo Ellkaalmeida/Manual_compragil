@@ -275,7 +275,10 @@ html,body,#app{height:100%;overflow:hidden}
 .clients-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 .clients-filter{flex:1;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 14px 8px 36px;font-size:13px;color:#1e293b;outline:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 12px center;transition:border .15s}
 .clients-filter:focus{border-color:#6366f1}
-.clients-count{font-size:12px;color:#94a3b8;white-space:nowrap}
+.clients-copy-all-btn{border:1.5px solid #e2e8f0;background:#fff;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;color:#64748b;cursor:pointer;white-space:nowrap;transition:all .15s}
+.clients-copy-all-btn:hover{background:#eff6ff;border-color:#6366f1;color:#6366f1}
+.clients-copy-all-btn.copied{background:#dcfce7;border-color:#86efac;color:#15803d}
+.clients-footer{margin-top:16px;text-align:center;font-size:12px;color:#cbd5e1}
 .clients-table-wrap{background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04)}
 .clients-table{width:100%;border-collapse:collapse}
 .clients-table th{background:#2d3561;color:#fff;font-size:11px;font-weight:700;padding:13px 16px;text-align:left;letter-spacing:.06em;text-transform:uppercase}
@@ -1570,13 +1573,12 @@ function clientRowHTML(c, i, canEdit) {
       <td>${escHtml(c.unit)}</td>
       <td>${escHtml(c.bank)}</td>
       <td>${statusBadge(c.status)}</td>
-      <td>
+      ${canEdit ? `<td>
         <div class="clients-row-actions">
-          <button class="clients-copy-icon" data-bank="${escHtml(c.bank)}">⎘ Copiar</button>
-          ${canEdit ? `<button class="clients-row-edit" data-ci="${i}">✏ Editar</button>
-          <button class="clients-row-del" data-ci="${i}">✕ Excluir</button>` : ''}
+          <button class="clients-row-edit" data-ci="${i}">✏ Editar</button>
+          <button class="clients-row-del" data-ci="${i}">✕ Excluir</button>
         </div>
-      </td>
+      </td>` : ''}
     </tr>`;
 }
 
@@ -1620,7 +1622,7 @@ function renderClientsPanel() {
     </div>` : ''}
     <div class="clients-toolbar">
       <input class="clients-filter" id="_clientFilter" type="text" placeholder="Filtrar por cliente, unidade, banco ou status...">
-      <span class="clients-count" id="_clientsCount">${clients.length} registro${clients.length !== 1 ? 's' : ''}</span>
+      <button class="clients-copy-all-btn" id="_copyActiveBanksBtn">⎘ Copiar bancos ativos</button>
     </div>
     <div class="clients-table-wrap">
       ${clients.length === 0
@@ -1631,10 +1633,13 @@ function renderClientsPanel() {
               <th>Unidade</th>
               <th>Banco</th>
               <th>Status</th>
-              <th></th>
+              ${canEdit ? '<th></th>' : ''}
             </tr></thead>
             <tbody>${clients.map((c, i) => clientRowHTML(c, i, canEdit)).join('')}</tbody>
           </table>`}
+    </div>
+    <div class="clients-footer">
+      <span id="_clientsCount">${clients.length} registro${clients.length !== 1 ? 's' : ''} cadastrado${clients.length !== 1 ? 's' : ''}</span>
     </div>`;
 
   if (canEdit) {
@@ -1725,20 +1730,22 @@ function renderClientsPanel() {
         if (match) visible++;
       });
       const counter = panel.querySelector('#_clientsCount');
-      if (counter) counter.textContent = `${visible} registro${visible !== 1 ? 's' : ''}`;
+      if (counter) counter.textContent = `${visible} registro${visible !== 1 ? 's' : ''} cadastrado${visible !== 1 ? 's' : ''}`;
     });
   }
 
-  // Copiar banco por linha
-  panel.querySelectorAll('.clients-copy-icon').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const bank = this.dataset.bank || '';
-      navigator.clipboard.writeText(bank).then(() => {
-        const orig = this.textContent;
-        this.textContent = '✓';
-        this.classList.add('copied');
-        setTimeout(() => { this.textContent = orig; this.classList.remove('copied'); }, 1500);
-      });
+  // Copiar todos os bancos ativos
+  panel.querySelector('#_copyActiveBanksBtn')?.addEventListener('click', function() {
+    const ativos = loadClients()
+      .filter(c => !c.status || c.status === 'Ativo')
+      .map(c => c.bank)
+      .filter(Boolean);
+    if (!ativos.length) { alert('Nenhum banco ativo encontrado.'); return; }
+    navigator.clipboard.writeText(ativos.join('\n')).then(() => {
+      const orig = this.textContent;
+      this.textContent = `✓ ${ativos.length} copiados`;
+      this.classList.add('copied');
+      setTimeout(() => { this.textContent = orig; this.classList.remove('copied'); }, 2000);
     });
   });
 }
