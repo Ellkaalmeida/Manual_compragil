@@ -137,8 +137,8 @@ html,body,#app{height:100%;overflow:hidden}
 .topbar-actions .btn-save{color:rgba(255,255,255,.9);background:rgba(99,102,241,.25);border:1px solid rgba(99,102,241,.35)}
 .topbar-actions .btn-save:hover{background:rgba(99,102,241,.5);color:#fff;border-color:rgba(99,102,241,.6)}
 .topbar-actions button[title]:hover::after{content:attr(title);position:absolute;bottom:-30px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;font-size:10px;padding:3px 8px;border-radius:5px;white-space:nowrap;pointer-events:none;z-index:9999;border:1px solid rgba(255,255,255,.1)}
-.subnav{background:#fff;display:flex;align-items:center;height:var(--sub);border-bottom:1px solid #e2e8f0;flex-shrink:0;overflow-x:auto}
-.subnav-item{font-size:13px;color:#64748b;padding:0 18px;height:100%;display:flex;align-items:center;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .2s}
+.subnav{background:#fff;display:flex;align-items:center;flex-wrap:wrap;min-height:var(--sub);border-bottom:1px solid #e2e8f0;flex-shrink:0;overflow:visible}
+.subnav-item{font-size:12.5px;color:#64748b;padding:0 12px;height:var(--sub);display:flex;align-items:center;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:color .2s}
 .subnav-item:hover{color:#1e293b}
 .subnav-item.active{color:#2d3561;font-weight:600;border-bottom-color:#2d3561}
 .editor-wrap{flex:1;display:flex;overflow:hidden}
