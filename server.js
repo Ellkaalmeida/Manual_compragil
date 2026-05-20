@@ -20,7 +20,9 @@ function saveWhitelist(wl) {
 let whitelist = loadWhitelist();
 
 // ─── Persistência de páginas ───────────────────────────────────────────────
-const PAGES_FILE = 'pages.json';
+// Usa volume persistente do Railway (/data) se disponível, senão pasta local
+const DATA_DIR   = fs.existsSync('/data') ? '/data' : '.';
+const PAGES_FILE = DATA_DIR + '/pages.json';
 
 function loadPages() {
   try {
