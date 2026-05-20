@@ -256,42 +256,47 @@ html,body,#app{height:100%;overflow:hidden}
 .search-btn:hover{background:rgba(255,255,255,.12);color:#fff}
 
 /* ── Clients Panel ── */
-.clients-panel{padding:24px 40px 60px;overflow-y:auto;flex:1;display:none;background:#f8fafc}
+.clients-panel{padding:32px 48px 60px;overflow-y:auto;flex:1;display:none;background:#f8fafc}
 .clients-panel.visible{display:block}
-.clients-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.clients-title{font-size:22px;font-weight:700;color:#0f172a}
-.clients-import-btn{background:none;border:1.5px solid #e2e8f0;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;color:#64748b;cursor:pointer;transition:all .15s}
+.clients-header{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+.clients-header-icon{font-size:28px;line-height:1}
+.clients-header-text{flex:1}
+.clients-title{font-size:22px;font-weight:700;color:#0f172a;line-height:1.2}
+.clients-subtitle{font-size:12px;color:#94a3b8;margin-top:2px}
+.clients-import-btn{background:none;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;color:#64748b;cursor:pointer;transition:all .15s;white-space:nowrap}
 .clients-import-btn:hover{background:#f1f5f9;border-color:#c7d2fe;color:#2d3561}
-.clients-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
-.clients-filter{flex:1;min-width:180px;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 14px 8px 36px;font-size:13px;color:#1e293b;outline:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 12px center;transition:border .15s}
-.clients-filter:focus{border-color:#6366f1}
-.clients-copy-icon{border:1.5px solid #e2e8f0;background:#fff;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;color:#64748b}
-.clients-copy-icon:hover{background:#eff6ff;border-color:#6366f1;color:#6366f1}
-.clients-copy-icon.copied{background:#dcfce7;border-color:#86efac;color:#15803d}
-.clients-form{display:flex;gap:10px;margin-bottom:24px;background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px;flex-wrap:wrap;align-items:flex-end}
-.clients-form-field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:140px}
-.clients-form-field label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#64748b}
-.clients-form-field input{border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 12px;font-size:13px;color:#1e293b;outline:none;transition:border .15s}
-.clients-form-field input:focus{border-color:#6366f1}
-.clients-form-add{background:#2d3561;color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .15s;height:38px;align-self:flex-end}
+.clients-form{display:flex;gap:12px;margin-bottom:20px;background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:18px;flex-wrap:wrap;align-items:flex-end;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.clients-form-field{display:flex;flex-direction:column;gap:5px;flex:1;min-width:140px}
+.clients-form-field label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94a3b8}
+.clients-form-field input{border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 12px;font-size:13px;color:#1e293b;outline:none;transition:border .15s;background:#f8fafc}
+.clients-form-field input:focus{border-color:#6366f1;background:#fff}
+.clients-form-add{background:#2d3561;color:#fff;border:none;border-radius:8px;padding:0 20px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .15s;height:38px;align-self:flex-end}
 .clients-form-add:hover{background:#6366f1}
-.clients-table-wrap{background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;overflow:hidden}
+.clients-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.clients-filter{flex:1;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 14px 8px 36px;font-size:13px;color:#1e293b;outline:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 12px center;transition:border .15s}
+.clients-filter:focus{border-color:#6366f1}
+.clients-count{font-size:12px;color:#94a3b8;white-space:nowrap}
+.clients-table-wrap{background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04)}
 .clients-table{width:100%;border-collapse:collapse}
-.clients-table th{background:#2d3561;color:#fff;font-size:12px;font-weight:600;padding:12px 16px;text-align:left;letter-spacing:.04em}
-.clients-table td{padding:12px 16px;font-size:13px;color:#334155;border-bottom:1px solid #f1f5f9}
+.clients-table th{background:#2d3561;color:#fff;font-size:11px;font-weight:700;padding:13px 16px;text-align:left;letter-spacing:.06em;text-transform:uppercase}
+.clients-table td{padding:11px 16px;font-size:13px;color:#334155;border-bottom:1px solid #f1f5f9}
 .clients-table tr:last-child td{border-bottom:none}
 .clients-table tbody tr:hover td{background:#f8fafc}
-.clients-row-actions{display:flex;gap:6px}
-.clients-row-edit,.clients-row-del,.clients-row-save,.clients-row-cancel{border:1.5px solid #e2e8f0;background:#fff;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;color:#64748b}
+.clients-row-actions{display:flex;gap:5px;justify-content:flex-end}
+.clients-row-edit,.clients-row-del,.clients-row-save,.clients-row-cancel,.clients-copy-icon{border:1.5px solid #e2e8f0;background:#fff;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;color:#64748b;white-space:nowrap}
+.clients-copy-icon:hover{background:#eff6ff;border-color:#6366f1;color:#6366f1}
+.clients-copy-icon.copied{background:#dcfce7;border-color:#86efac;color:#15803d}
 .clients-row-edit:hover{background:#eff6ff;border-color:#6366f1;color:#6366f1}
 .clients-row-del:hover{background:#fff1f2;border-color:#f43f5e;color:#f43f5e}
+.clients-row-save{background:#6366f1 !important;border-color:#6366f1 !important;color:#fff !important}
+.clients-row-save:hover{background:#4338ca !important}
 .status-badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;letter-spacing:.3px;white-space:nowrap}
 .status-ativo{background:#dcfce7;color:#15803d}
 .status-bloqueado{background:#fee2e2;color:#b91c1c}
 .status-offline{background:#f1f5f9;color:#64748b}
-.clients-status-select{border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:13px;color:#1e293b;outline:none;background:#fff;cursor:pointer;transition:border .15s}
-.clients-status-select:focus{border-color:#6366f1}
-.clients-row-save{background:#6366f1 !important;border-color:#6366f1 !important;color:#fff !important}
+.clients-status-select{border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:13px;color:#1e293b;outline:none;background:#f8fafc;cursor:pointer;transition:border .15s}
+.clients-status-select:focus{border-color:#6366f1;background:#fff}
+.clients-empty{text-align:center;padding:60px 20px;color:#94a3b8;font-size:14px}
 .clients-row-save:hover{background:#4338ca !important;border-color:#4338ca !important}
 .clients-edit-input{border:1.5px solid #6366f1;border-radius:6px;padding:6px 10px;font-size:13px;color:#1e293b;outline:none;width:100%;background:#fff;box-sizing:border-box}
 .clients-empty{text-align:center;padding:60px 20px;color:#94a3b8;font-size:14px}
@@ -1569,7 +1574,7 @@ function clientRowHTML(c, i, canEdit) {
         <div class="clients-row-actions">
           <button class="clients-copy-icon" data-bank="${escHtml(c.bank)}">⎘ Copiar</button>
           ${canEdit ? `<button class="clients-row-edit" data-ci="${i}">✏ Editar</button>
-          <button class="clients-row-del" data-ci="${i}">🗑</button>` : ''}
+          <button class="clients-row-del" data-ci="${i}">✕ Excluir</button>` : ''}
         </div>
       </td>
     </tr>`;
@@ -1581,11 +1586,12 @@ function renderClientsPanel() {
   const panel = document.getElementById('clientsPanel');
 
   panel.innerHTML = `
-    <div class="page-icon-row" style="margin-bottom:6px">
-      <button class="page-icon-btn" style="cursor:default;font-size:30px">👥</button>
-    </div>
     <div class="clients-header">
-      <div class="clients-title">Clientes</div>
+      <div class="clients-header-icon">👥</div>
+      <div class="clients-header-text">
+        <div class="clients-title">Clientes</div>
+        <div class="clients-subtitle">${clients.length} registro${clients.length !== 1 ? 's' : ''} cadastrado${clients.length !== 1 ? 's' : ''}</div>
+      </div>
       ${canEdit ? `<button class="clients-import-btn" id="_importDefaultBtn">⬇ Importar padrão</button>` : ''}
     </div>
     ${canEdit ? `
@@ -1614,6 +1620,7 @@ function renderClientsPanel() {
     </div>` : ''}
     <div class="clients-toolbar">
       <input class="clients-filter" id="_clientFilter" type="text" placeholder="Filtrar por cliente, unidade, banco ou status...">
+      <span class="clients-count" id="_clientsCount">${clients.length} registro${clients.length !== 1 ? 's' : ''}</span>
     </div>
     <div class="clients-table-wrap">
       ${clients.length === 0
@@ -1711,10 +1718,14 @@ function renderClientsPanel() {
     filterInput.addEventListener('input', () => {
       const q = filterInput.value.toLowerCase();
       const rows = panel.querySelectorAll('#_clientsTable tbody tr');
+      let visible = 0;
       rows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(q) ? '' : 'none';
+        const match = row.textContent.toLowerCase().includes(q);
+        row.style.display = match ? '' : 'none';
+        if (match) visible++;
       });
+      const counter = panel.querySelector('#_clientsCount');
+      if (counter) counter.textContent = `${visible} registro${visible !== 1 ? 's' : ''}`;
     });
   }
 
