@@ -24,8 +24,11 @@ const GH_TOKEN = process.env.GITHUB_TOKEN || '';
 const GH_OWNER = 'Ellkaalmeida';
 const GH_REPO  = 'Manual_compragil';
 const GH_FILE  = 'data/pages.json';
+const GH_WL_FILE = 'data/whitelist.json';
 let   _ghSha   = null;
+let   _ghWlSha = null;
 let   _ghSaveTimer = null;
+let   _ghWlSaveTimer = null;
 
 function ghRequest(method, path, body) {
   return new Promise((resolve, reject) => {
@@ -85,6 +88,39 @@ function scheduleGitHubSave() {
   }, 30000); // Agrupa saves — máximo 1 commit a cada 30s
 }
 
+async function loadWhitelistFromGitHub() {
+  if (!GH_TOKEN) return null;
+  try {
+    const res = await ghRequest('GET', `/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_WL_FILE}`);
+    if (res.content && res.sha) {
+      _ghWlSha = res.sha;
+      const data = JSON.parse(Buffer.from(res.content, 'base64').toString('utf8'));
+      console.log(`[github] whitelist carregada (${Object.keys(data).length} usuários)`);
+      return data;
+    }
+  } catch (e) { console.warn('[github] whitelist load:', e.message); }
+  return null;
+}
+
+function scheduleWhitelistGitHubSave() {
+  if (!GH_TOKEN) return;
+  clearTimeout(_ghWlSaveTimer);
+  _ghWlSaveTimer = setTimeout(async () => {
+    try {
+      const content = Buffer.from(JSON.stringify(whitelist, null, 2)).toString('base64');
+      const res = await ghRequest('PUT', `/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_WL_FILE}`, {
+        message: 'auto-save: whitelist de usuários',
+        content,
+        ...(_ghWlSha ? { sha: _ghWlSha } : {})
+      });
+      if (res.content && res.content.sha) {
+        _ghWlSha = res.content.sha;
+        console.log('[github] whitelist salva com sucesso');
+      }
+    } catch (e) { console.error('[github] whitelist save error:', e.message); }
+  }, 5000); // Salva rapidamente — permissões são críticas
+}
+
 // ─── Persistência local (fallback) ────────────────────────────────────────
 const DATA_DIR   = fs.existsSync('/data') ? '/data' : '.';
 const PAGES_FILE = DATA_DIR + '/pages.json';
@@ -115,6 +151,14 @@ if (GH_TOKEN) {
       Object.assign(pages, ghPages);
       savePages();
       console.log('[github] dados restaurados com sucesso');
+    }
+  });
+  // Restaura whitelist do GitHub (filesystem do Render é efêmero)
+  loadWhitelistFromGitHub().then(ghWl => {
+    if (ghWl && Object.keys(ghWl).length > 0) {
+      Object.assign(whitelist, ghWl);
+      saveWhitelist(whitelist);
+      console.log('[github] whitelist restaurada com sucesso');
     }
   });
 }
@@ -228,6 +272,7 @@ wss.on('connection', (ws) => {
         if (msg.action === 'add')    whitelist[msg.userName] = msg.userRole;
         if (msg.action === 'delete') delete whitelist[msg.userName];
         saveWhitelist(whitelist);
+        scheduleWhitelistGitHubSave();
         clients.forEach(c => {
           if (c.role === 'admin' && c.readyState === WebSocket.OPEN)
             c.send(JSON.stringify({ type: 'whitelist_update', whitelist }));
