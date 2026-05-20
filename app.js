@@ -274,9 +274,12 @@ html,body,#app{height:100%;overflow:hidden}
 .clients-table tr:last-child td{border-bottom:none}
 .clients-table tbody tr:hover td{background:#f8fafc}
 .clients-row-actions{display:flex;gap:6px}
-.clients-row-edit,.clients-row-del{border:1.5px solid #e2e8f0;background:#fff;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;color:#64748b}
+.clients-row-edit,.clients-row-del,.clients-row-save,.clients-row-cancel{border:1.5px solid #e2e8f0;background:#fff;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;color:#64748b}
 .clients-row-edit:hover{background:#eff6ff;border-color:#6366f1;color:#6366f1}
 .clients-row-del:hover{background:#fff1f2;border-color:#f43f5e;color:#f43f5e}
+.clients-row-save{background:#6366f1 !important;border-color:#6366f1 !important;color:#fff !important}
+.clients-row-save:hover{background:#4338ca !important;border-color:#4338ca !important}
+.clients-edit-input{border:1.5px solid #6366f1;border-radius:6px;padding:6px 10px;font-size:13px;color:#1e293b;outline:none;width:100%;background:#fff;box-sizing:border-box}
 .clients-empty{text-align:center;padding:60px 20px;color:#94a3b8;font-size:14px}
 
 /* ── Image resize toolbar ── */
@@ -1549,15 +1552,24 @@ function renderClientsPanel() {
         const ci  = parseInt(btn.dataset.ci);
         const cls = loadClients();
         const c   = cls[ci];
-        const unit   = prompt('Unidade:', c.unit || '');
-        if (unit === null) return;
-        const bank   = prompt('Banco:', c.bank || '');
-        if (bank === null) return;
-        const client = prompt('Cliente:', c.client || '');
-        if (client === null) return;
-        cls[ci] = { unit: unit.trim(), bank: bank.trim(), client: client.trim() };
-        saveClients(cls);
-        renderClientsPanel();
+        const tr  = btn.closest('tr');
+        tr.innerHTML = `
+          <td><input class="clients-edit-input" data-field="client" value="${escHtml(c.client)}"></td>
+          <td><input class="clients-edit-input" data-field="unit"   value="${escHtml(c.unit)}"></td>
+          <td><input class="clients-edit-input" data-field="bank"   value="${escHtml(c.bank)}"></td>
+          <td>
+            <div class="clients-row-actions">
+              <button class="clients-row-save">✓ Salvar</button>
+              <button class="clients-row-cancel">✕</button>
+            </div>
+          </td>`;
+        tr.querySelector('.clients-edit-input').focus();
+        tr.querySelector('.clients-row-save').addEventListener('click', () => {
+          tr.querySelectorAll('.clients-edit-input').forEach(inp => { cls[ci][inp.dataset.field] = inp.value.trim(); });
+          saveClients(cls);
+          renderClientsPanel();
+        });
+        tr.querySelector('.clients-row-cancel').addEventListener('click', () => renderClientsPanel());
       });
     });
 
