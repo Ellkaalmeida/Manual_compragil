@@ -1480,7 +1480,7 @@ function clientRowHTML(c, i, canEdit) {
     <tr>
       <td>${escHtml(c.client)}</td>
       <td>${escHtml(c.unit)}</td>
-      <td>🏦 ${escHtml(c.bank)}</td>
+      <td>${escHtml(c.bank)}</td>
       ${canEdit ? `<td>
         <div class="clients-row-actions">
           <button class="clients-row-edit" data-ci="${i}">✏ Editar</button>
@@ -1496,8 +1496,11 @@ function renderClientsPanel() {
   const panel = document.getElementById('clientsPanel');
 
   panel.innerHTML = `
+    <div class="page-icon-row" style="margin-bottom:6px">
+      <button class="page-icon-btn" style="cursor:default;font-size:30px">👥</button>
+    </div>
     <div class="clients-header">
-      <div class="clients-title">👥 Clientes Ativos</div>
+      <div class="clients-title">Clientes Ativos</div>
     </div>
     ${canEdit ? `
     <div class="clients-form">
