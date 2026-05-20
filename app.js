@@ -1548,7 +1548,7 @@ function escHtml(s) {
 
 function statusBadge(s) {
   const map = { 'Ativo': 'status-ativo', 'Bloqueado': 'status-bloqueado', 'Offline': 'status-offline' };
-  const cls = map[s] || 'status-offline';
+  const cls = map[s] || 'status-ativo';
   return `<span class="status-badge ${cls}">${escHtml(s || 'Ativo')}</span>`;
 }
 
@@ -1623,9 +1623,16 @@ function renderClientsPanel() {
   if (canEdit) {
     panel.querySelector('#_importDefaultBtn')?.addEventListener('click', () => {
       const cls = loadClients();
+      const defaultByBank = {};
+      DEFAULT_CLIENTS.forEach(d => { defaultByBank[d.bank.toLowerCase()] = d; });
+      // Atualiza status dos registros existentes que batem com o padrão
+      cls.forEach(c => {
+        const def = defaultByBank[(c.bank || '').toLowerCase()];
+        if (def && !c.status) c.status = def.status;
+      });
+      // Adiciona os que ainda não existem
       const existingBanks = new Set(cls.map(c => (c.bank || '').toLowerCase()));
       const toAdd = DEFAULT_CLIENTS.filter(d => !existingBanks.has(d.bank.toLowerCase()));
-      if (toAdd.length === 0) { alert('Todos os registros padrão já estão cadastrados.'); return; }
       saveClients([...cls, ...toAdd]);
       renderClientsPanel();
     });
