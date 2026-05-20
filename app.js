@@ -1478,9 +1478,9 @@ function escHtml(s) {
 function clientRowHTML(c, i, canEdit) {
   return `
     <tr>
+      <td>${escHtml(c.client)}</td>
       <td>${escHtml(c.unit)}</td>
       <td>🏦 ${escHtml(c.bank)}</td>
-      <td>${escHtml(c.client)}</td>
       ${canEdit ? `<td>
         <div class="clients-row-actions">
           <button class="clients-row-edit" data-ci="${i}">✏ Editar</button>
@@ -1502,16 +1502,16 @@ function renderClientsPanel() {
     ${canEdit ? `
     <div class="clients-form">
       <div class="clients-form-field">
+        <label>Cliente</label>
+        <input type="text" id="_fClient" placeholder="Nome do cliente">
+      </div>
+      <div class="clients-form-field">
         <label>Unidade</label>
         <input type="text" id="_fUnit" placeholder="Nome da unidade">
       </div>
       <div class="clients-form-field">
         <label>Banco</label>
         <input type="text" id="_fBank" placeholder="Nome do banco">
-      </div>
-      <div class="clients-form-field">
-        <label>Cliente</label>
-        <input type="text" id="_fClient" placeholder="Nome do cliente">
       </div>
       <button class="clients-form-add" id="_clientAddBtn">+ Adicionar</button>
     </div>` : ''}
@@ -1520,9 +1520,9 @@ function renderClientsPanel() {
         ? '<div class="clients-empty">Nenhum registro ainda.<br><span style="font-size:12px">Preencha os campos acima e clique em "+ Adicionar".</span></div>'
         : `<table class="clients-table">
             <thead><tr>
+              <th>Cliente</th>
               <th>Unidade</th>
               <th>Banco</th>
-              <th>Cliente</th>
               ${canEdit ? '<th></th>' : ''}
             </tr></thead>
             <tbody>${clients.map((c, i) => clientRowHTML(c, i, canEdit)).join('')}</tbody>
