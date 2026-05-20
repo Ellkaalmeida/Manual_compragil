@@ -265,9 +265,10 @@ html,body,#app{height:100%;overflow:hidden}
 .clients-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
 .clients-filter{flex:1;min-width:180px;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 14px 8px 36px;font-size:13px;color:#1e293b;outline:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 12px center;transition:border .15s}
 .clients-filter:focus{border-color:#6366f1}
-.clients-copy-btn{background:none;border:1.5px solid #e2e8f0;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;color:#64748b;cursor:pointer;white-space:nowrap;transition:all .15s}
-.clients-copy-btn:hover{background:#f0fdf4;border-color:#86efac;color:#15803d}
-.clients-copy-btn.copied{background:#dcfce7;border-color:#86efac;color:#15803d}
+.clients-copy-cell{display:flex;align-items:center;gap:8px}
+.clients-copy-icon{background:none;border:none;cursor:pointer;color:#cbd5e1;padding:2px 4px;border-radius:4px;font-size:13px;line-height:1;transition:color .15s,background .15s;flex-shrink:0}
+.clients-copy-icon:hover{color:#6366f1;background:#eff6ff}
+.clients-copy-icon.copied{color:#15803d}
 .clients-form{display:flex;gap:10px;margin-bottom:24px;background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px;flex-wrap:wrap;align-items:flex-end}
 .clients-form-field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:140px}
 .clients-form-field label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#64748b}
@@ -1563,7 +1564,7 @@ function clientRowHTML(c, i, canEdit) {
     <tr>
       <td>${escHtml(c.client)}</td>
       <td>${escHtml(c.unit)}</td>
-      <td>${escHtml(c.bank)}</td>
+      <td><div class="clients-copy-cell"><span>${escHtml(c.bank)}</span><button class="clients-copy-icon" data-bank="${escHtml(c.bank)}" title="Copiar">⎘</button></div></td>
       <td>${statusBadge(c.status)}</td>
       ${canEdit ? `<td>
         <div class="clients-row-actions">
@@ -1613,7 +1614,6 @@ function renderClientsPanel() {
     </div>` : ''}
     <div class="clients-toolbar">
       <input class="clients-filter" id="_clientFilter" type="text" placeholder="Filtrar por cliente, unidade, banco ou status...">
-      <button class="clients-copy-btn" id="_copyBanksBtn">📋 Copiar bancos</button>
     </div>
     <div class="clients-table-wrap">
       ${clients.length === 0
@@ -1718,20 +1718,16 @@ function renderClientsPanel() {
     });
   }
 
-  // Copiar coluna Banco (visíveis)
-  panel.querySelector('#_copyBanksBtn')?.addEventListener('click', function() {
-    const rows = panel.querySelectorAll('#_clientsTable tbody tr');
-    const banks = [];
-    rows.forEach(row => {
-      if (row.style.display !== 'none') {
-        const cell = row.cells[2];
-        if (cell) banks.push(cell.textContent.trim());
-      }
-    });
-    navigator.clipboard.writeText(banks.join('\n')).then(() => {
-      this.textContent = '✓ Copiado!';
-      this.classList.add('copied');
-      setTimeout(() => { this.textContent = '📋 Copiar bancos'; this.classList.remove('copied'); }, 2000);
+  // Copiar banco por linha
+  panel.querySelectorAll('.clients-copy-icon').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const bank = this.dataset.bank || '';
+      navigator.clipboard.writeText(bank).then(() => {
+        const orig = this.textContent;
+        this.textContent = '✓';
+        this.classList.add('copied');
+        setTimeout(() => { this.textContent = orig; this.classList.remove('copied'); }, 1500);
+      });
     });
   });
 }
