@@ -11,7 +11,7 @@ window.onerror = function(msg, src, line, col, err) {
   return false;
 };
 
-const WS_URL = 'wss://manualcompragil-production.up.railway.app';
+const WS_URL = 'wss://manual-compragil.onrender.com';
 
 const USER_COLORS = ['#6366f1','#f43f5e','#10b981','#f59e0b','#3b82f6','#8b5cf6','#ec4899'];
 const EMOJIS = ['📄','📋','📊','⚠️','🧾','⚖️','📁','🚫','🪪','📢','📝','🤝','🛒','🏭','📈','⊞','📌','🗂','🗒','🗃','📎','🖇','✅','❌','⭐','🔍','🔒','🔑','💡','📣','🏷','📬','🧮','📐','✅', '✔️','👈','👉','👆','👇','✍️','🗝️','🔐','🔓','🔒','🪛','🔗','📲','📱','🖥️','💻','🖨️','💾','💡','📖','💸','📍','⌛','🗑️','🗃️','🚩','🚨','❌','❓','❗','🔴','🟠','🟡','🟢','🔵','🟣','⚫','⚪'];
