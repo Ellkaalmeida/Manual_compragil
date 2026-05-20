@@ -279,6 +279,12 @@ html,body,#app{height:100%;overflow:hidden}
 .clients-row-edit,.clients-row-del,.clients-row-save,.clients-row-cancel{border:1.5px solid #e2e8f0;background:#fff;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;color:#64748b}
 .clients-row-edit:hover{background:#eff6ff;border-color:#6366f1;color:#6366f1}
 .clients-row-del:hover{background:#fff1f2;border-color:#f43f5e;color:#f43f5e}
+.status-badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;letter-spacing:.3px;white-space:nowrap}
+.status-ativo{background:#dcfce7;color:#15803d}
+.status-bloqueado{background:#fee2e2;color:#b91c1c}
+.status-offline{background:#f1f5f9;color:#64748b}
+.clients-status-select{border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:13px;color:#1e293b;outline:none;background:#fff;cursor:pointer;transition:border .15s}
+.clients-status-select:focus{border-color:#6366f1}
 .clients-row-save{background:#6366f1 !important;border-color:#6366f1 !important;color:#fff !important}
 .clients-row-save:hover{background:#4338ca !important;border-color:#4338ca !important}
 .clients-edit-input{border:1.5px solid #6366f1;border-radius:6px;padding:6px 10px;font-size:13px;color:#1e293b;outline:none;width:100%;background:#fff;box-sizing:border-box}
@@ -1464,52 +1470,62 @@ const CLIENTS_KEY = '__clients__';
 
 const DEFAULT_CLIENTS = [
   // Policlínicas
-  { client: 'Jacobina',               unit: 'Policlínica',       bank: 'BD_POLICLINICA_JACOBINA' },
-  { client: 'Senhor do Bonfim',       unit: 'Policlínica',       bank: 'BD_POLICLINICA_SENHOR_DO_BONFIM' },
+  { client: 'Jacobina',               unit: 'Policlínica',       bank: 'BD_POLICLINICA_JACOBINA',           status: 'Ativo' },
+  { client: 'Senhor do Bonfim',       unit: 'Policlínica',       bank: 'BD_POLICLINICA_SENHOR_DO_BONFIM',   status: 'Ativo' },
+  { client: 'Jequié',                 unit: 'Policlínica',       bank: 'BD_POLICLINICA_JEQUIE',             status: 'Bloqueado' },
+  // Previdências
+  { client: 'Francisco Conde',        unit: 'Previdência',       bank: 'BD_PREVIDENCIA_FRANCISCO_CONDE',    status: 'Bloqueado' },
   // Câmaras
-  { client: 'Castro Alves',           unit: 'Câmara',            bank: 'BD_CASTRO_ALVES_CAMARA' },
-  { client: 'Madre de Deus',          unit: 'Câmara',            bank: 'BD_MADRE_DE_DEUS_CAMARA' },
-  { client: 'Miguel Calmon',          unit: 'Câmara',            bank: 'BD_MIGUEL_CALMON_CAMARA' },
-  { client: 'Santa Terezinha',        unit: 'Câmara',            bank: 'BD_SANTA_TEREZINHA_CAMARA' },
-  { client: 'Seabra',                 unit: 'Câmara',            bank: 'BD_SEABRA_CAMARA' },
+  { client: 'Almadina',               unit: 'Câmara',            bank: 'BD_ALMADINA_CAMARA',                status: 'Bloqueado' },
+  { client: 'Castro Alves',           unit: 'Câmara',            bank: 'BD_CASTRO_ALVES_CAMARA',            status: 'Ativo' },
+  { client: 'Madre de Deus',          unit: 'Câmara',            bank: 'BD_MADRE_DE_DEUS_CAMARA',           status: 'Ativo' },
+  { client: 'Miguel Calmon',          unit: 'Câmara',            bank: 'BD_MIGUEL_CALMON_CAMARA',           status: 'Ativo' },
+  { client: 'Santa Terezinha',        unit: 'Câmara',            bank: 'BD_SANTA_TEREZINHA_CAMARA',         status: 'Ativo' },
+  { client: 'Seabra',                 unit: 'Câmara',            bank: 'BD_SEABRA_CAMARA',                  status: 'Ativo' },
   // Prefeituras
-  { client: 'Almadina',               unit: 'Prefeitura',        bank: 'BD_ALMADINA' },
-  { client: 'Angical',                unit: 'Prefeitura',        bank: 'BD_ANGICAL' },
-  { client: 'Antônio Cardoso',        unit: 'Prefeitura',        bank: 'BD_ANTONIO_CARDOSO' },
-  { client: 'Breijões',               unit: 'Prefeitura',        bank: 'BD_BREJOES' },
-  { client: 'Cairu',                  unit: 'Prefeitura',        bank: 'BD_CAIRU' },
-  { client: 'Canarana',               unit: 'Prefeitura',        bank: 'BD_CANARANA' },
-  { client: 'Capim Grosso',           unit: 'Prefeitura',        bank: 'BD_CAPIM_GROSSO' },
-  { client: 'Castro Alves',           unit: 'Prefeitura',        bank: 'BD_CASTRO_ALVES' },
-  { client: 'Coaraci',                unit: 'Prefeitura',        bank: 'BD_COARACI' },
-  { client: 'Conceição da Feira',     unit: 'Prefeitura',        bank: 'BD_CONCEICAO_FEIRA' },
-  { client: 'Formosa do Rio Preto',   unit: 'Prefeitura',        bank: 'BD_FORMOSA_RIO_PRETO' },
-  { client: 'Ibitita',                unit: 'Prefeitura',        bank: 'BD_IBITITA' },
-  { client: 'Inhambupe',              unit: 'Prefeitura',        bank: 'BD_INHAMBUPE' },
-  { client: 'Irará',                  unit: 'Prefeitura',        bank: 'BD_IRARA' },
-  { client: 'Itagibá',               unit: 'Prefeitura',        bank: 'BD_ITAGIBA' },
-  { client: 'Jaguaripe',              unit: 'Prefeitura',        bank: 'BD_JAGUARIPE' },
-  { client: 'Jitauna',               unit: 'Prefeitura',        bank: 'BD_JITAUNA' },
-  { client: 'Lajedinho',              unit: 'Prefeitura',        bank: 'BD_LAJEDINHO' },
-  { client: 'Lauro de Freitas',       unit: 'Prefeitura',        bank: 'BD_LAURO_DE_FREITAS' },
-  { client: 'Maragogi',               unit: 'Prefeitura',        bank: 'BD_MARAGOGI' },
-  { client: 'Mirante',                unit: 'Prefeitura',        bank: 'BD_MIRANTE' },
-  { client: 'Mutuípe',               unit: 'Prefeitura',        bank: 'BD_MUTUIPE' },
-  { client: 'Nazaré',                unit: 'Prefeitura',        bank: 'BD_NAZARE' },
-  { client: 'Palmeiras',              unit: 'Prefeitura',        bank: 'BD_PALMEIRAS' },
-  { client: 'Penedo',                 unit: 'Prefeitura',        bank: 'BD_PENEDO' },
-  { client: 'Piritiba',               unit: 'Prefeitura',        bank: 'BD_PIRITIBA' },
-  { client: 'Pojuca',                 unit: 'Prefeitura',        bank: 'BD_POJUCA' },
-  { client: 'Ruy Barbosa',            unit: 'Prefeitura',        bank: 'BD_RUY_BARBOSA' },
-  { client: 'Seabra',                 unit: 'Prefeitura',        bank: 'BD_SEABRA' },
-  { client: 'Tancredo Neves',         unit: 'Prefeitura',        bank: 'BD_TANCREDO_NEVES' },
-  { client: 'Várzea Nova',           unit: 'Prefeitura',        bank: 'BD_VARZEA_NOVA' },
-  { client: 'Wenceslau Guimarães',   unit: 'Prefeitura',        bank: 'BD_WENCESLAU_GUIMARAES' },
+  { client: 'Almadina',               unit: 'Prefeitura',        bank: 'BD_ALMADINA',                       status: 'Ativo' },
+  { client: 'Angical',                unit: 'Prefeitura',        bank: 'BD_ANGICAL',                        status: 'Ativo' },
+  { client: 'Antônio Cardoso',        unit: 'Prefeitura',        bank: 'BD_ANTONIO_CARDOSO',                status: 'Ativo' },
+  { client: 'Breijões',               unit: 'Prefeitura',        bank: 'BD_BREJOES',                        status: 'Ativo' },
+  { client: 'Cairu',                  unit: 'Prefeitura',        bank: 'BD_CAIRU',                          status: 'Ativo' },
+  { client: 'Canarana',               unit: 'Prefeitura',        bank: 'BD_CANARANA',                       status: 'Ativo' },
+  { client: 'Capim Grosso',           unit: 'Prefeitura',        bank: 'BD_CAPIM_GROSSO',                   status: 'Ativo' },
+  { client: 'Castro Alves',           unit: 'Prefeitura',        bank: 'BD_CASTRO_ALVES',                   status: 'Ativo' },
+  { client: 'Coaraci',                unit: 'Prefeitura',        bank: 'BD_COARACI',                        status: 'Ativo' },
+  { client: 'Conceição da Feira',     unit: 'Prefeitura',        bank: 'BD_CONCEICAO_FEIRA',                status: 'Ativo' },
+  { client: 'Euclides da Cunha',      unit: 'Prefeitura',        bank: 'BD_EUCLIDES',                       status: 'Offline' },
+  { client: 'Euclides da Cunha',      unit: 'Prefeitura',        bank: 'BD_EUCLIDES_DA_CUNHA',              status: 'Offline' },
+  { client: 'Euclides da Cunha',      unit: 'Prefeitura',        bank: 'BD_EUCLIDES_DA_CUNHA_PROD_ANTIGO',  status: 'Offline' },
+  { client: 'Formosa do Rio Preto',   unit: 'Prefeitura',        bank: 'BD_FORMOSA_RIO_PRETO',              status: 'Ativo' },
+  { client: 'Ibitita',                unit: 'Prefeitura',        bank: 'BD_IBITITA',                        status: 'Ativo' },
+  { client: 'Inhambupe',              unit: 'Prefeitura',        bank: 'BD_INHAMBUPE',                      status: 'Ativo' },
+  { client: 'Irará',                  unit: 'Prefeitura',        bank: 'BD_IRARA',                          status: 'Ativo' },
+  { client: 'Itagibá',               unit: 'Prefeitura',        bank: 'BD_ITAGIBA',                        status: 'Ativo' },
+  { client: 'Jaguaripe',              unit: 'Prefeitura',        bank: 'BD_JAGUARIPE',                      status: 'Ativo' },
+  { client: 'Jitauna',               unit: 'Prefeitura',        bank: 'BD_JITAUNA',                        status: 'Ativo' },
+  { client: 'Lajedinho',              unit: 'Prefeitura',        bank: 'BD_LAJEDINHO',                      status: 'Ativo' },
+  { client: 'Lauro de Freitas',       unit: 'Prefeitura',        bank: 'BD_LAURO_DE_FREITAS',               status: 'Ativo' },
+  { client: 'Lençóis',               unit: 'Prefeitura',        bank: 'BD_LENCOIS',                        status: 'Bloqueado' },
+  { client: 'Maragogi',               unit: 'Prefeitura',        bank: 'BD_MARAGOGI',                       status: 'Ativo' },
+  { client: 'Mirante',                unit: 'Prefeitura',        bank: 'BD_MIRANTE',                        status: 'Ativo' },
+  { client: 'Mulungu do Morro',       unit: 'Prefeitura',        bank: 'BD_MULUNGU_DO_MORRO',               status: 'Bloqueado' },
+  { client: 'Mutuípe',               unit: 'Prefeitura',        bank: 'BD_MUTUIPE',                        status: 'Ativo' },
+  { client: 'Nazaré',                unit: 'Prefeitura',        bank: 'BD_NAZARE',                         status: 'Ativo' },
+  { client: 'Palmeiras',              unit: 'Prefeitura',        bank: 'BD_PALMEIRAS',                      status: 'Ativo' },
+  { client: 'Penedo',                 unit: 'Prefeitura',        bank: 'BD_PENEDO',                         status: 'Ativo' },
+  { client: 'Piritiba',               unit: 'Prefeitura',        bank: 'BD_PIRITIBA',                       status: 'Ativo' },
+  { client: 'Pojuca',                 unit: 'Prefeitura',        bank: 'BD_POJUCA',                         status: 'Ativo' },
+  { client: 'Ruy Barbosa',            unit: 'Prefeitura',        bank: 'BD_RUY_BARBOSA',                    status: 'Ativo' },
+  { client: 'São Desidério',         unit: 'Prefeitura',        bank: 'BD_SAO_DESIDERIO',                  status: 'Bloqueado' },
+  { client: 'Seabra',                 unit: 'Prefeitura',        bank: 'BD_SEABRA',                         status: 'Ativo' },
+  { client: 'Tancredo Neves',         unit: 'Prefeitura',        bank: 'BD_TANCREDO_NEVES',                 status: 'Ativo' },
+  { client: 'Várzea Nova',           unit: 'Prefeitura',        bank: 'BD_VARZEA_NOVA',                    status: 'Ativo' },
+  { client: 'Wenceslau Guimarães',   unit: 'Prefeitura',        bank: 'BD_WENCESLAU_GUIMARAES',            status: 'Ativo' },
   // Teste / Homologação
-  { client: 'Apresentação',          unit: 'Teste/Homologação', bank: 'BD_APRESENTACAO' },
-  { client: 'Suporte',                unit: 'Teste/Homologação', bank: 'BD_SUPORTE' },
-  { client: 'Lauro de Freitas',       unit: 'Homologação',       bank: 'BD_LAURO_HOMOLOGACAO' },
-  { client: 'Emanuel',                unit: 'Teste',             bank: 'BD_TESTE_FORMOSA_RIO_PRETO' },
+  { client: 'Apresentação',          unit: 'Teste/Homologação', bank: 'BD_APRESENTACAO',                   status: 'Ativo' },
+  { client: 'Suporte',                unit: 'Teste/Homologação', bank: 'BD_SUPORTE',                        status: 'Ativo' },
+  { client: 'Lauro de Freitas',       unit: 'Homologação',       bank: 'BD_LAURO_HOMOLOGACAO',              status: 'Ativo' },
+  { client: 'Emanuel',                unit: 'Teste',             bank: 'BD_TESTE_FORMOSA_RIO_PRETO',        status: 'Ativo' },
 ];
 
 function loadClients() {
@@ -1530,12 +1546,19 @@ function escHtml(s) {
   return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+function statusBadge(s) {
+  const map = { 'Ativo': 'status-ativo', 'Bloqueado': 'status-bloqueado', 'Offline': 'status-offline' };
+  const cls = map[s] || 'status-offline';
+  return `<span class="status-badge ${cls}">${escHtml(s || 'Ativo')}</span>`;
+}
+
 function clientRowHTML(c, i, canEdit) {
   return `
     <tr>
       <td>${escHtml(c.client)}</td>
       <td>${escHtml(c.unit)}</td>
       <td>${escHtml(c.bank)}</td>
+      <td>${statusBadge(c.status)}</td>
       ${canEdit ? `<td>
         <div class="clients-row-actions">
           <button class="clients-row-edit" data-ci="${i}">✏ Editar</button>
@@ -1572,6 +1595,14 @@ function renderClientsPanel() {
         <label>Banco</label>
         <input type="text" id="_fBank" placeholder="Nome do banco">
       </div>
+      <div class="clients-form-field" style="flex:0;min-width:130px">
+        <label>Status</label>
+        <select id="_fStatus" class="clients-status-select">
+          <option value="Ativo">Ativo</option>
+          <option value="Bloqueado">Bloqueado</option>
+          <option value="Offline">Offline</option>
+        </select>
+      </div>
       <button class="clients-form-add" id="_clientAddBtn">+ Adicionar</button>
     </div>` : ''}
     <div class="clients-table-wrap">
@@ -1582,6 +1613,7 @@ function renderClientsPanel() {
               <th>Cliente</th>
               <th>Unidade</th>
               <th>Banco</th>
+              <th>Status</th>
               ${canEdit ? '<th></th>' : ''}
             </tr></thead>
             <tbody>${clients.map((c, i) => clientRowHTML(c, i, canEdit)).join('')}</tbody>
@@ -1602,9 +1634,10 @@ function renderClientsPanel() {
       const unit   = document.getElementById('_fUnit').value.trim();
       const bank   = document.getElementById('_fBank').value.trim();
       const client = document.getElementById('_fClient').value.trim();
+      const status = document.getElementById('_fStatus').value;
       if (!unit && !bank && !client) return;
       const cls = loadClients();
-      cls.push({ unit, bank, client });
+      cls.push({ unit, bank, client, status });
       saveClients(cls);
       renderClientsPanel();
     });
@@ -1615,10 +1648,16 @@ function renderClientsPanel() {
         const cls = loadClients();
         const c   = cls[ci];
         const tr  = btn.closest('tr');
+        const st = c.status || 'Ativo';
         tr.innerHTML = `
           <td><input class="clients-edit-input" data-field="client" value="${escHtml(c.client)}"></td>
           <td><input class="clients-edit-input" data-field="unit"   value="${escHtml(c.unit)}"></td>
           <td><input class="clients-edit-input" data-field="bank"   value="${escHtml(c.bank)}"></td>
+          <td><select class="clients-status-select _editStatus" style="width:100%">
+            <option value="Ativo"     ${st==='Ativo'    ?'selected':''}>Ativo</option>
+            <option value="Bloqueado" ${st==='Bloqueado'?'selected':''}>Bloqueado</option>
+            <option value="Offline"   ${st==='Offline'  ?'selected':''}>Offline</option>
+          </select></td>
           <td>
             <div class="clients-row-actions">
               <button class="clients-row-save">✓ Salvar</button>
@@ -1628,6 +1667,7 @@ function renderClientsPanel() {
         tr.querySelector('.clients-edit-input').focus();
         tr.querySelector('.clients-row-save').addEventListener('click', () => {
           tr.querySelectorAll('.clients-edit-input').forEach(inp => { cls[ci][inp.dataset.field] = inp.value.trim(); });
+          cls[ci].status = tr.querySelector('._editStatus').value;
           saveClients(cls);
           renderClientsPanel();
         });
