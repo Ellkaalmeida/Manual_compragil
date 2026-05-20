@@ -258,8 +258,10 @@ html,body,#app{height:100%;overflow:hidden}
 /* ── Clients Panel ── */
 .clients-panel{padding:24px 40px 60px;overflow-y:auto;flex:1;display:none;background:#f8fafc}
 .clients-panel.visible{display:block}
-.clients-header{margin-bottom:20px}
+.clients-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
 .clients-title{font-size:22px;font-weight:700;color:#0f172a}
+.clients-import-btn{background:none;border:1.5px solid #e2e8f0;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;color:#64748b;cursor:pointer;transition:all .15s}
+.clients-import-btn:hover{background:#f1f5f9;border-color:#c7d2fe;color:#2d3561}
 .clients-form{display:flex;gap:10px;margin-bottom:24px;background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px;flex-wrap:wrap;align-items:flex-end}
 .clients-form-field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:140px}
 .clients-form-field label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#64748b}
@@ -1554,6 +1556,7 @@ function renderClientsPanel() {
     </div>
     <div class="clients-header">
       <div class="clients-title">Clientes Ativos</div>
+      ${canEdit ? `<button class="clients-import-btn" id="_importDefaultBtn">⬇ Importar padrão</button>` : ''}
     </div>
     ${canEdit ? `
     <div class="clients-form">
@@ -1586,6 +1589,15 @@ function renderClientsPanel() {
     </div>`;
 
   if (canEdit) {
+    panel.querySelector('#_importDefaultBtn')?.addEventListener('click', () => {
+      const cls = loadClients();
+      const existingBanks = new Set(cls.map(c => (c.bank || '').toLowerCase()));
+      const toAdd = DEFAULT_CLIENTS.filter(d => !existingBanks.has(d.bank.toLowerCase()));
+      if (toAdd.length === 0) { alert('Todos os registros padrão já estão cadastrados.'); return; }
+      saveClients([...cls, ...toAdd]);
+      renderClientsPanel();
+    });
+
     panel.querySelector('#_clientAddBtn')?.addEventListener('click', () => {
       const unit   = document.getElementById('_fUnit').value.trim();
       const bank   = document.getElementById('_fBank').value.trim();
