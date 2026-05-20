@@ -36,7 +36,7 @@ const navItems = [
   {label:'Relatórios',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><path d="M3 20h18"/><path d="M6 14l3-3 3 3 4-4"/></svg>'}
 ];
 
-const subnavItems = ['Introdução','Cadastros','Almoxarifado','Planejar','Solicitar','Cotar','Contratar','Comprar','Relatórios','Utilitários','Configuração','Atualização','Extras'];
+const subnavItems = ['Introdução','Cadastros','Almoxarifado','Planejar','Solicitar','Cotar','Contratar','Comprar','Relatórios','Utilitários','Configuração','Atualização','Clientes','Extras'];
 
 // ─── Estado global ─────────────────────────────────────────────────────────
 let currentUser  = { name: '', color: USER_COLORS[0] };
@@ -255,6 +255,31 @@ html,body,#app{height:100%;overflow:hidden}
 .search-btn{}
 .search-btn:hover{background:rgba(255,255,255,.12);color:#fff}
 
+/* ── Clients Panel ── */
+.clients-panel{padding:24px 60px 60px;overflow-y:auto;flex:1;display:none;background:#f8fafc}
+.clients-panel.visible{display:block}
+.clients-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.clients-title{font-size:22px;font-weight:700;color:#0f172a}
+.clients-add-btn{background:#2d3561;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s}
+.clients-add-btn:hover{background:#6366f1}
+.clients-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.client-card{background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:18px;transition:border .2s,box-shadow .2s}
+.client-card:hover{border-color:#c7d2fe;box-shadow:0 4px 16px rgba(99,102,241,.08)}
+.client-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.client-name{font-size:15px;font-weight:700;color:#1e293b}
+.client-badge{background:#dcfce7;color:#15803d;font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px;letter-spacing:.3px}
+.client-banks-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:6px}
+.client-banks{display:flex;flex-direction:column;gap:5px;min-height:24px;margin-bottom:14px}
+.client-bank-item{display:flex;align-items:center;justify-content:space-between;background:#f8fafc;border:1px solid #e2e8f0;border-radius:7px;padding:6px 10px;font-size:12px;color:#334155}
+.bank-del-btn{background:none;border:none;cursor:pointer;color:#cbd5e1;font-size:12px;padding:0 2px;transition:color .15s;line-height:1}
+.bank-del-btn:hover{color:#f43f5e}
+.client-card-actions{display:flex;gap:6px;padding-top:12px;border-top:1px solid #f1f5f9}
+.client-action-btn{flex:1;border:1.5px solid #e2e8f0;background:#fff;border-radius:7px;padding:7px 0;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;color:#64748b}
+.client-action-btn:hover{background:#f1f5ff;border-color:#c7d2fe;color:#2d3561}
+.client-del-btn{border-color:#fecdd3 !important;color:#f43f5e !important}
+.client-del-btn:hover{background:#fff1f2 !important;border-color:#f43f5e !important}
+.clients-empty{grid-column:1/-1;text-align:center;padding:60px 20px;color:#94a3b8;font-size:14px}
+
 /* ── Image resize toolbar ── */
 .img-resize-toolbar{position:fixed;background:#1e293b;border-radius:8px;padding:5px 8px;display:none;align-items:center;gap:4px;z-index:9997;box-shadow:0 4px 20px rgba(0,0,0,.3)}
 .img-resize-toolbar.visible{display:flex}
@@ -384,6 +409,9 @@ document.getElementById('app').innerHTML = `
           <div class="tb-sep"></div>
           <button class="tbl-del-btn" id="_tblDelete" title="Remover tabela">🗑 Tabela</button>
         </div>
+        <!-- Clients Panel -->
+        <div class="clients-panel" id="clientsPanel"></div>
+
         <div class="editor-scroll" id="editorScroll">
           <div class="page-header">
             <div class="page-icon-row">
@@ -1216,6 +1244,7 @@ function buildSidebarNav() {
       document.querySelectorAll('.nav-item').forEach((x, j) => x.classList.toggle('active', j === i));
       document.querySelectorAll('.subnav-item').forEach(x => x.classList.remove('active'));
       document.getElementById('breadcrumb').textContent = item.label;
+      hideClientsPanel();
       loadPage(activePageKey);
       wsSend({ type: 'typing', pageKey: activePageKey });
     });
@@ -1238,7 +1267,12 @@ function buildSubnav() {
       document.querySelectorAll('.subnav-item').forEach(x => x.classList.remove('active'));
       el.classList.add('active');
       document.getElementById('breadcrumb').textContent = item;
-      loadPage(activePageKey);
+      if (item === 'Clientes') {
+        showClientsPanel();
+      } else {
+        hideClientsPanel();
+        loadPage(activePageKey);
+      }
     });
     subnavEl.appendChild(el);
   });
@@ -1419,6 +1453,137 @@ function setupDragDrop() {
     const img = [...(e.clipboardData?.items||[])].find(it => it.type.startsWith('image/'));
     if (img) { e.preventDefault(); insertImage(img.getAsFile()); }
   });
+}
+
+// ─── Clientes ──────────────────────────────────────────────────────────────
+const CLIENTS_KEY = '__clients__';
+
+function loadClients() {
+  const page = localPages[CLIENTS_KEY];
+  if (!page) return [];
+  if (Array.isArray(page.clients)) return page.clients;
+  try { return JSON.parse(page.content || '[]'); } catch { return []; }
+}
+
+function saveClients(clients) {
+  const data = { title: 'Clientes', content: JSON.stringify(clients), icon: '👥', intro: '', links: [], clients };
+  localPages[CLIENTS_KEY] = data;
+  saveLocalPages();
+  wsSend({ type: 'page_update', pageKey: CLIENTS_KEY, ...data });
+}
+
+function clientCardHTML(c, i, canEdit) {
+  const banks = c.banks || [];
+  return `
+    <div class="client-card">
+      <div class="client-card-top">
+        <span class="client-name">${c.name}</span>
+        <span class="client-badge">Ativo</span>
+      </div>
+      <div class="client-banks-label">Bancos</div>
+      <div class="client-banks">
+        ${banks.length === 0
+          ? '<span style="font-size:11px;color:#cbd5e1;padding:2px 0">Nenhum banco cadastrado</span>'
+          : banks.map((b, bi) => `
+            <div class="client-bank-item">
+              <span>🏦 ${b}</span>
+              ${canEdit ? `<button class="bank-del-btn" data-ci="${i}" data-bi="${bi}">✕</button>` : ''}
+            </div>`).join('')}
+      </div>
+      ${canEdit ? `
+        <div class="client-card-actions">
+          <button class="client-action-btn _addBankBtn" data-ci="${i}">+ Banco</button>
+          <button class="client-action-btn _editClientBtn" data-ci="${i}">✏ Editar</button>
+          <button class="client-action-btn client-del-btn _delClientBtn" data-ci="${i}">🗑 Remover</button>
+        </div>` : ''}
+    </div>`;
+}
+
+function renderClientsPanel() {
+  const canEdit = currentUser.role === 'admin' || currentUser.role === 'editor';
+  const clients = loadClients();
+  const panel = document.getElementById('clientsPanel');
+
+  panel.innerHTML = `
+    <div class="clients-header">
+      <div class="clients-title">👥 Clientes Ativos</div>
+      ${canEdit ? `<button class="clients-add-btn" id="_clientAddBtn">+ Novo Cliente</button>` : ''}
+    </div>
+    <div class="clients-grid">
+      ${clients.length === 0
+        ? '<div class="clients-empty">Nenhum cliente cadastrado ainda.<br><span style="font-size:12px">Clique em "+ Novo Cliente" para começar.</span></div>'
+        : clients.map((c, i) => clientCardHTML(c, i, canEdit)).join('')}
+    </div>`;
+
+  if (canEdit) {
+    panel.querySelector('#_clientAddBtn')?.addEventListener('click', () => {
+      const name = prompt('Nome do cliente:');
+      if (!name?.trim()) return;
+      const cls = loadClients();
+      cls.push({ name: name.trim(), banks: [] });
+      saveClients(cls);
+      renderClientsPanel();
+    });
+
+    panel.querySelectorAll('._addBankBtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const ci = parseInt(btn.dataset.ci);
+        const bank = prompt('Nome do banco:');
+        if (!bank?.trim()) return;
+        const cls = loadClients();
+        cls[ci].banks = cls[ci].banks || [];
+        cls[ci].banks.push(bank.trim());
+        saveClients(cls);
+        renderClientsPanel();
+      });
+    });
+
+    panel.querySelectorAll('._editClientBtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const ci = parseInt(btn.dataset.ci);
+        const cls = loadClients();
+        const name = prompt('Nome do cliente:', cls[ci].name);
+        if (!name?.trim()) return;
+        cls[ci].name = name.trim();
+        saveClients(cls);
+        renderClientsPanel();
+      });
+    });
+
+    panel.querySelectorAll('._delClientBtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const ci = parseInt(btn.dataset.ci);
+        const cls = loadClients();
+        if (!confirm(`Remover "${cls[ci].name}"?`)) return;
+        cls.splice(ci, 1);
+        saveClients(cls);
+        renderClientsPanel();
+      });
+    });
+
+    panel.querySelectorAll('.bank-del-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const ci = parseInt(btn.dataset.ci);
+        const bi = parseInt(btn.dataset.bi);
+        const cls = loadClients();
+        cls[ci].banks.splice(bi, 1);
+        saveClients(cls);
+        renderClientsPanel();
+      });
+    });
+  }
+}
+
+function showClientsPanel() {
+  document.getElementById('clientsPanel').classList.add('visible');
+  document.getElementById('editorScroll').style.display = 'none';
+  document.getElementById('toolbar').style.display = 'none';
+  renderClientsPanel();
+}
+
+function hideClientsPanel() {
+  document.getElementById('clientsPanel').classList.remove('visible');
+  document.getElementById('editorScroll').style.display = '';
 }
 
 // ─── Image resize interaction ──────────────────────────────────────────────
