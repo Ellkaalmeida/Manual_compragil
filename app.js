@@ -256,29 +256,28 @@ html,body,#app{height:100%;overflow:hidden}
 .search-btn:hover{background:rgba(255,255,255,.12);color:#fff}
 
 /* ── Clients Panel ── */
-.clients-panel{padding:24px 60px 60px;overflow-y:auto;flex:1;display:none;background:#f8fafc}
+.clients-panel{padding:24px 40px 60px;overflow-y:auto;flex:1;display:none;background:#f8fafc}
 .clients-panel.visible{display:block}
-.clients-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.clients-header{margin-bottom:20px}
 .clients-title{font-size:22px;font-weight:700;color:#0f172a}
-.clients-add-btn{background:#2d3561;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s}
-.clients-add-btn:hover{background:#6366f1}
-.clients-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
-.client-card{background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:18px;transition:border .2s,box-shadow .2s}
-.client-card:hover{border-color:#c7d2fe;box-shadow:0 4px 16px rgba(99,102,241,.08)}
-.client-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.client-name{font-size:15px;font-weight:700;color:#1e293b}
-.client-badge{background:#dcfce7;color:#15803d;font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px;letter-spacing:.3px}
-.client-banks-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:6px}
-.client-banks{display:flex;flex-direction:column;gap:5px;min-height:24px;margin-bottom:14px}
-.client-bank-item{display:flex;align-items:center;justify-content:space-between;background:#f8fafc;border:1px solid #e2e8f0;border-radius:7px;padding:6px 10px;font-size:12px;color:#334155}
-.bank-del-btn{background:none;border:none;cursor:pointer;color:#cbd5e1;font-size:12px;padding:0 2px;transition:color .15s;line-height:1}
-.bank-del-btn:hover{color:#f43f5e}
-.client-card-actions{display:flex;gap:6px;padding-top:12px;border-top:1px solid #f1f5f9}
-.client-action-btn{flex:1;border:1.5px solid #e2e8f0;background:#fff;border-radius:7px;padding:7px 0;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;color:#64748b}
-.client-action-btn:hover{background:#f1f5ff;border-color:#c7d2fe;color:#2d3561}
-.client-del-btn{border-color:#fecdd3 !important;color:#f43f5e !important}
-.client-del-btn:hover{background:#fff1f2 !important;border-color:#f43f5e !important}
-.clients-empty{grid-column:1/-1;text-align:center;padding:60px 20px;color:#94a3b8;font-size:14px}
+.clients-form{display:flex;gap:10px;margin-bottom:24px;background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px;flex-wrap:wrap;align-items:flex-end}
+.clients-form-field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:140px}
+.clients-form-field label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#64748b}
+.clients-form-field input{border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 12px;font-size:13px;color:#1e293b;outline:none;transition:border .15s}
+.clients-form-field input:focus{border-color:#6366f1}
+.clients-form-add{background:#2d3561;color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .15s;height:38px;align-self:flex-end}
+.clients-form-add:hover{background:#6366f1}
+.clients-table-wrap{background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;overflow:hidden}
+.clients-table{width:100%;border-collapse:collapse}
+.clients-table th{background:#2d3561;color:#fff;font-size:12px;font-weight:600;padding:12px 16px;text-align:left;letter-spacing:.04em}
+.clients-table td{padding:12px 16px;font-size:13px;color:#334155;border-bottom:1px solid #f1f5f9}
+.clients-table tr:last-child td{border-bottom:none}
+.clients-table tbody tr:hover td{background:#f8fafc}
+.clients-row-actions{display:flex;gap:6px}
+.clients-row-edit,.clients-row-del{border:1.5px solid #e2e8f0;background:#fff;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;color:#64748b}
+.clients-row-edit:hover{background:#eff6ff;border-color:#6366f1;color:#6366f1}
+.clients-row-del:hover{background:#fff1f2;border-color:#f43f5e;color:#f43f5e}
+.clients-empty{text-align:center;padding:60px 20px;color:#94a3b8;font-size:14px}
 
 /* ── Image resize toolbar ── */
 .img-resize-toolbar{position:fixed;background:#1e293b;border-radius:8px;padding:5px 8px;display:none;align-items:center;gap:4px;z-index:9997;box-shadow:0 4px 20px rgba(0,0,0,.3)}
@@ -1472,31 +1471,23 @@ function saveClients(clients) {
   wsSend({ type: 'page_update', pageKey: CLIENTS_KEY, ...data });
 }
 
-function clientCardHTML(c, i, canEdit) {
-  const banks = c.banks || [];
+function escHtml(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function clientRowHTML(c, i, canEdit) {
   return `
-    <div class="client-card">
-      <div class="client-card-top">
-        <span class="client-name">${c.name}</span>
-        <span class="client-badge">Ativo</span>
-      </div>
-      <div class="client-banks-label">Bancos</div>
-      <div class="client-banks">
-        ${banks.length === 0
-          ? '<span style="font-size:11px;color:#cbd5e1;padding:2px 0">Nenhum banco cadastrado</span>'
-          : banks.map((b, bi) => `
-            <div class="client-bank-item">
-              <span>🏦 ${b}</span>
-              ${canEdit ? `<button class="bank-del-btn" data-ci="${i}" data-bi="${bi}">✕</button>` : ''}
-            </div>`).join('')}
-      </div>
-      ${canEdit ? `
-        <div class="client-card-actions">
-          <button class="client-action-btn _addBankBtn" data-ci="${i}">+ Banco</button>
-          <button class="client-action-btn _editClientBtn" data-ci="${i}">✏ Editar</button>
-          <button class="client-action-btn client-del-btn _delClientBtn" data-ci="${i}">🗑 Remover</button>
-        </div>` : ''}
-    </div>`;
+    <tr>
+      <td>${escHtml(c.unit)}</td>
+      <td>🏦 ${escHtml(c.bank)}</td>
+      <td>${escHtml(c.client)}</td>
+      ${canEdit ? `<td>
+        <div class="clients-row-actions">
+          <button class="clients-row-edit" data-ci="${i}">✏ Editar</button>
+          <button class="clients-row-del" data-ci="${i}">🗑</button>
+        </div>
+      </td>` : ''}
+    </tr>`;
 }
 
 function renderClientsPanel() {
@@ -1507,66 +1498,73 @@ function renderClientsPanel() {
   panel.innerHTML = `
     <div class="clients-header">
       <div class="clients-title">👥 Clientes Ativos</div>
-      ${canEdit ? `<button class="clients-add-btn" id="_clientAddBtn">+ Novo Cliente</button>` : ''}
     </div>
-    <div class="clients-grid">
+    ${canEdit ? `
+    <div class="clients-form">
+      <div class="clients-form-field">
+        <label>Unidade</label>
+        <input type="text" id="_fUnit" placeholder="Nome da unidade">
+      </div>
+      <div class="clients-form-field">
+        <label>Banco</label>
+        <input type="text" id="_fBank" placeholder="Nome do banco">
+      </div>
+      <div class="clients-form-field">
+        <label>Cliente</label>
+        <input type="text" id="_fClient" placeholder="Nome do cliente">
+      </div>
+      <button class="clients-form-add" id="_clientAddBtn">+ Adicionar</button>
+    </div>` : ''}
+    <div class="clients-table-wrap">
       ${clients.length === 0
-        ? '<div class="clients-empty">Nenhum cliente cadastrado ainda.<br><span style="font-size:12px">Clique em "+ Novo Cliente" para começar.</span></div>'
-        : clients.map((c, i) => clientCardHTML(c, i, canEdit)).join('')}
+        ? '<div class="clients-empty">Nenhum registro ainda.<br><span style="font-size:12px">Preencha os campos acima e clique em "+ Adicionar".</span></div>'
+        : `<table class="clients-table">
+            <thead><tr>
+              <th>Unidade</th>
+              <th>Banco</th>
+              <th>Cliente</th>
+              ${canEdit ? '<th></th>' : ''}
+            </tr></thead>
+            <tbody>${clients.map((c, i) => clientRowHTML(c, i, canEdit)).join('')}</tbody>
+          </table>`}
     </div>`;
 
   if (canEdit) {
     panel.querySelector('#_clientAddBtn')?.addEventListener('click', () => {
-      const name = prompt('Nome do cliente:');
-      if (!name?.trim()) return;
+      const unit   = document.getElementById('_fUnit').value.trim();
+      const bank   = document.getElementById('_fBank').value.trim();
+      const client = document.getElementById('_fClient').value.trim();
+      if (!unit && !bank && !client) return;
       const cls = loadClients();
-      cls.push({ name: name.trim(), banks: [] });
+      cls.push({ unit, bank, client });
       saveClients(cls);
       renderClientsPanel();
     });
 
-    panel.querySelectorAll('._addBankBtn').forEach(btn => {
+    panel.querySelectorAll('.clients-row-edit').forEach(btn => {
       btn.addEventListener('click', () => {
-        const ci = parseInt(btn.dataset.ci);
-        const bank = prompt('Nome do banco:');
-        if (!bank?.trim()) return;
+        const ci  = parseInt(btn.dataset.ci);
         const cls = loadClients();
-        cls[ci].banks = cls[ci].banks || [];
-        cls[ci].banks.push(bank.trim());
+        const c   = cls[ci];
+        const unit   = prompt('Unidade:', c.unit || '');
+        if (unit === null) return;
+        const bank   = prompt('Banco:', c.bank || '');
+        if (bank === null) return;
+        const client = prompt('Cliente:', c.client || '');
+        if (client === null) return;
+        cls[ci] = { unit: unit.trim(), bank: bank.trim(), client: client.trim() };
         saveClients(cls);
         renderClientsPanel();
       });
     });
 
-    panel.querySelectorAll('._editClientBtn').forEach(btn => {
+    panel.querySelectorAll('.clients-row-del').forEach(btn => {
       btn.addEventListener('click', () => {
-        const ci = parseInt(btn.dataset.ci);
+        const ci  = parseInt(btn.dataset.ci);
         const cls = loadClients();
-        const name = prompt('Nome do cliente:', cls[ci].name);
-        if (!name?.trim()) return;
-        cls[ci].name = name.trim();
-        saveClients(cls);
-        renderClientsPanel();
-      });
-    });
-
-    panel.querySelectorAll('._delClientBtn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const ci = parseInt(btn.dataset.ci);
-        const cls = loadClients();
-        if (!confirm(`Remover "${cls[ci].name}"?`)) return;
+        const label = cls[ci].unit || cls[ci].client || 'este registro';
+        if (!confirm(`Remover "${label}"?`)) return;
         cls.splice(ci, 1);
-        saveClients(cls);
-        renderClientsPanel();
-      });
-    });
-
-    panel.querySelectorAll('.bank-del-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const ci = parseInt(btn.dataset.ci);
-        const bi = parseInt(btn.dataset.bi);
-        const cls = loadClients();
-        cls[ci].banks.splice(bi, 1);
         saveClients(cls);
         renderClientsPanel();
       });
