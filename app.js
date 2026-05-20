@@ -667,6 +667,15 @@ function handleMessage(msg) {
     renderOnlineUsers(msg.users);
   }
 
+  if (msg.type === 'request_pages') {
+    // Servidor reiniciou vazio — envia todo o localStorage para restaurar os dados
+    const dump = {};
+    Object.entries(localPages).forEach(([key, val]) => {
+      if (val && (val.content || val.title)) dump[key] = val;
+    });
+    if (Object.keys(dump).length > 0) wsSend({ type: 'pages_dump', pages: dump });
+  }
+
   if (msg.type === 'typing') {
     if (msg.pageKey === activePageKey) {
       const el = document.getElementById('typingInfo');

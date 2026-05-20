@@ -78,7 +78,10 @@ function onlineList() {
 
 wss.on('connection', (ws) => {
   clients.add(ws);
+  const serverEmpty = Object.keys(pages).length === 0;
   ws.send(JSON.stringify({ type: 'init', pages }));
+  // Se o servidor está vazio (reiniciou), pede imediatamente os dados ao cliente
+  if (serverEmpty) ws.send(JSON.stringify({ type: 'request_pages' }));
 
   ws.on('message', (raw) => {
     try {
@@ -97,6 +100,21 @@ wss.on('connection', (ws) => {
         ws.send(JSON.stringify({ type: 'confirm_role', role: ws.role, whitelist }));
         broadcast({ type: 'online', users: onlineList() });
         ws.send(JSON.stringify({ type: 'online', users: onlineList() }));
+        // Se o servidor ainda está vazio após o join, pede novamente os dados
+        if (Object.keys(pages).length === 0) ws.send(JSON.stringify({ type: 'request_pages' }));
+      }
+
+      if (msg.type === 'pages_dump') {
+        // Cliente enviou todos os seus dados — popula o servidor se estiver vazio
+        const dump = msg.pages || {};
+        let count = 0;
+        Object.entries(dump).forEach(([key, val]) => {
+          if (!pages[key] && val && (val.content || val.title)) {
+            pages[key] = val;
+            count++;
+          }
+        });
+        if (count > 0) { savePages(); console.log(`[pages_dump] ${count} páginas restauradas de ${ws.userName}`); }
       }
 
       if (msg.type === 'manage_users') {
