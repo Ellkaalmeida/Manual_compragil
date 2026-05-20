@@ -1578,7 +1578,7 @@ function renderClientsPanel() {
       <button class="page-icon-btn" style="cursor:default;font-size:30px">👥</button>
     </div>
     <div class="clients-header">
-      <div class="clients-title">Clientes Ativos</div>
+      <div class="clients-title">Clientes</div>
       ${canEdit ? `<button class="clients-import-btn" id="_importDefaultBtn">⬇ Importar padrão</button>` : ''}
     </div>
     ${canEdit ? `
