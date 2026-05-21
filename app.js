@@ -206,41 +206,43 @@ html,body,#app{height:100%;overflow:hidden}
 .typing-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;color:#fff;margin-right:4px}
 .logo-icon{cursor:pointer;transition:transform .15s,box-shadow .15s}
 .logo-icon:hover{transform:scale(1.08);box-shadow:0 0 0 3px rgba(99,102,241,.35)}
-.notes-overlay{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:9990;display:none;backdrop-filter:blur(2px)}
+.notes-overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:9990;display:none;backdrop-filter:blur(3px)}
 .notes-overlay.open{display:block}
-.notes-drawer{position:fixed;top:0;left:0;width:360px;height:100vh;background:#fff;z-index:9991;display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .25s cubic-bezier(.4,0,.2,1);box-shadow:4px 0 24px rgba(0,0,0,.18)}
+.notes-drawer{position:fixed;top:0;left:0;width:400px;height:100vh;background:#f8fafc;z-index:9991;display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);box-shadow:8px 0 40px rgba(15,23,42,.22)}
 .notes-drawer.open{transform:translateX(0)}
-.notes-drawer-header{background:#2d3561;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.notes-drawer-logo{display:flex;align-items:center;gap:10px}
-.notes-drawer-badge{width:34px;height:34px;border-radius:8px;background:#fff;color:#2d3561;font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center}
-.notes-drawer-title{color:#fff}
-.notes-drawer-title strong{display:block;font-size:13px;font-weight:700;letter-spacing:.4px}
+.notes-drawer-header{background:#2d3561;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.notes-drawer-logo{display:flex;align-items:center;gap:12px}
+.notes-drawer-badge{width:36px;height:36px;border-radius:9px;background:#fff;color:#2d3561;font-size:17px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.notes-drawer-title strong{display:block;font-size:13px;font-weight:700;letter-spacing:.5px;color:#fff}
 .notes-drawer-title small{font-size:10px;color:#a5b4fc}
-.notes-close-btn{background:none;border:none;color:rgba(255,255,255,.7);font-size:22px;cursor:pointer;padding:2px 6px;border-radius:6px;line-height:1;transition:background .15s}
-.notes-close-btn:hover{background:rgba(255,255,255,.15);color:#fff}
-.notes-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:18px}
-.notes-section-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin:0 0 6px}
-.notes-textarea{width:100%;min-height:140px;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:13px;line-height:1.65;color:#334155;background:#f8fafc;resize:vertical;font-family:Inter,sans-serif;box-sizing:border-box;transition:border .2s,background .2s}
-.notes-textarea:focus{outline:none;border-color:#6366f1;background:#fff}
-.notes-link-list{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
+.notes-close-btn{background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.8);width:30px;height:30px;border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.notes-close-btn:hover{background:rgba(255,255,255,.22);color:#fff}
+.notes-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:20px;display:flex;flex-direction:column;gap:20px}
+.notes-section{background:#fff;border-radius:12px;padding:16px;border:1px solid #e8edf4;box-shadow:0 1px 4px rgba(15,23,42,.05)}
+.notes-section-label{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#2d3561;margin:0 0 12px}
+.notes-section-label svg{width:14px;height:14px;color:#6366f1;flex-shrink:0}
+.notes-textarea{width:100%;min-height:150px;border:1.5px solid #e2e8f0;border-radius:8px;padding:11px 13px;font-size:13px;line-height:1.7;color:#334155;background:#f8fafc;resize:vertical;font-family:Inter,sans-serif;box-sizing:border-box;transition:border .2s,background .2s}
+.notes-textarea:focus{outline:none;border-color:#6366f1;background:#fff;box-shadow:0 0 0 3px rgba(99,102,241,.1)}
+.notes-link-list{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
 .notes-link-item{display:flex;align-items:center;gap:8px}
-.notes-link-anchor{flex:1;display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;text-decoration:none;color:#334155;font-size:12px;transition:background .15s,border .15s;overflow:hidden}
+.notes-link-anchor{flex:1;display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid #e2e8f0;border-radius:9px;background:#f8fafc;text-decoration:none;color:#334155;font-size:12px;transition:background .15s,border .15s;overflow:hidden}
 .notes-link-anchor:hover{background:#eef2ff;border-color:#c7d2fe}
-.notes-link-anchor .nl-icon{font-size:14px;flex-shrink:0;color:#6366f1}
+.notes-link-anchor .nl-icon{flex-shrink:0;color:#6366f1}
 .notes-link-info{overflow:hidden}
-.notes-link-name{font-weight:600;margin:0;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.notes-link-name{font-weight:600;margin:0;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#1e293b}
 .notes-link-url{font-size:10px;color:#94a3b8;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.notes-link-del{background:none;border:none;cursor:pointer;color:#cbd5e1;font-size:16px;padding:4px;border-radius:5px;flex-shrink:0;transition:color .15s}
-.notes-link-del:hover{color:#f43f5e}
-.notes-add-row{display:flex;gap:6px}
-.notes-add-row input{flex:1;border:1.5px solid #e2e8f0;border-radius:7px;padding:7px 10px;font-size:12px;color:#334155;background:#f8fafc;font-family:Inter,sans-serif;transition:border .2s}
-.notes-add-row input:focus{outline:none;border-color:#6366f1;background:#fff}
-.notes-btn-add{padding:7px 12px;background:#2d3561;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .15s}
+.notes-link-del{background:none;border:none;cursor:pointer;color:#cbd5e1;padding:5px;border-radius:6px;flex-shrink:0;transition:background .15s,color .15s;display:flex;align-items:center}
+.notes-link-del:hover{background:#fee2e2;color:#f43f5e}
+.notes-empty{font-size:12px;color:#94a3b8;text-align:center;padding:10px 0 6px;font-style:italic}
+.notes-add-row{display:flex;flex-direction:column;gap:7px}
+.notes-add-row input{width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#334155;background:#f8fafc;font-family:Inter,sans-serif;transition:border .2s,background .2s;box-sizing:border-box}
+.notes-add-row input:focus{outline:none;border-color:#6366f1;background:#fff;box-shadow:0 0 0 3px rgba(99,102,241,.1)}
+.notes-btn-add{width:100%;padding:9px;background:#2d3561;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:6px}
 .notes-btn-add:hover{background:#6366f1}
-.notes-footer{padding:12px 16px;border-top:1px solid #f1f5f9;flex-shrink:0}
-.notes-btn-save{width:100%;padding:10px;background:#2d3561;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:6px}
-.notes-btn-save:hover{background:#1e2340}
-.notes-saved-msg{text-align:center;font-size:11px;color:#10b981;margin-top:6px;height:16px;transition:opacity .3s}
+.notes-footer{padding:14px 20px;background:#fff;border-top:1px solid #e8edf4;flex-shrink:0}
+.notes-btn-save{width:100%;padding:11px;background:#2d3561;color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:7px}
+.notes-btn-save:hover{background:#6366f1}
+.notes-saved-msg{text-align:center;font-size:11px;color:#10b981;margin-top:8px;height:16px;transition:opacity .3s;font-weight:500}
 
 /* ── Search overlay ── */
 .search-overlay{position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:99995;display:none;align-items:flex-start;justify-content:center;padding-top:80px;backdrop-filter:blur(4px)}
@@ -490,25 +492,39 @@ document.getElementById('app').innerHTML = `
         <small>Sistema de compras públicas</small>
       </div>
     </div>
-    <button class="notes-close-btn" id="notesCloseBtn" aria-label="Fechar painel">✕</button>
+    <button class="notes-close-btn" id="notesCloseBtn" aria-label="Fechar painel">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
   </div>
   <div class="notes-body">
-    <div>
-      <p class="notes-section-label"> Notas & Observações</p>
+    <div class="notes-section">
+      <p class="notes-section-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Notas &amp; Observações
+      </p>
       <textarea class="notes-textarea" id="notesIntro" placeholder="Escreva aqui uma nota de contexto geral ou avisos importantes do manual..."></textarea>
     </div>
-    <div>
-      <p class="notes-section-label">Links Úteis</p>
+    <div class="notes-section">
+      <p class="notes-section-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        Links Úteis
+      </p>
       <div class="notes-link-list" id="notesLinkList"></div>
       <div class="notes-add-row">
         <input type="text" id="notesLinkLabel" placeholder="Nome do link" />
         <input type="text" id="notesLinkUrl" placeholder="https://..." />
-        <button class="notes-btn-add" id="notesAddLinkBtn">+ Add</button>
+        <button class="notes-btn-add" id="notesAddLinkBtn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Adicionar link
+        </button>
       </div>
     </div>
   </div>
   <div class="notes-footer">
-    <button class="notes-btn-save" id="notesSaveBtn"><svg style="width:15px;height:15px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Salvar </button>
+    <button class="notes-btn-save" id="notesSaveBtn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      Salvar
+    </button>
     <div class="notes-saved-msg" id="notesSavedMsg" style="opacity:0">✓ Salvo com sucesso</div>
   </div>
 </div>
@@ -563,7 +579,7 @@ function renderNotesLinks() {
   const list = document.getElementById('notesLinkList');
   list.innerHTML = '';
   if (notesLinks.length === 0) {
-    list.innerHTML = '<p style="font-size:11px;color:#94a3b8;margin:0 0 4px">Nenhum link adicionado ainda.</p>';
+    list.innerHTML = '<p class="notes-empty">Nenhum link adicionado ainda.</p>';
     return;
   }
   notesLinks.forEach((lk, i) => {
@@ -572,13 +588,13 @@ function renderNotesLinks() {
     const short = lk.url.length > 42 ? lk.url.slice(0, 42) + '…' : lk.url;
     row.innerHTML = `
       <a class="notes-link-anchor" href="${lk.url}" target="_blank" rel="noopener">
-        <span class="nl-icon">🔗</span>
+        <span class="nl-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>
         <div class="notes-link-info">
           <p class="notes-link-name">${lk.label}</p>
           <p class="notes-link-url">${short}</p>
         </div>
       </a>
-      ${(currentUser.role === "admin" || currentUser.role === "editor") ? `<button class="notes-link-del" data-i="${i}" title="Remover">✕</button>` : ""}`;
+      ${(currentUser.role === "admin" || currentUser.role === "editor") ? `<button class="notes-link-del" data-i="${i}" title="Remover"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>` : ""}`;
     list.appendChild(row);
   });
   list.querySelectorAll('.notes-link-del').forEach(btn => {
