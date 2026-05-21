@@ -1301,6 +1301,7 @@ function buildSubnav() {
       activePageKey = 'subnav-' + i;
       document.querySelectorAll('.subnav-item').forEach(x => x.classList.remove('active'));
       el.classList.add('active');
+      document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
       document.getElementById('breadcrumb').textContent = item;
       if (item === 'Clientes') {
         showClientsPanel();
