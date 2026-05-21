@@ -63,23 +63,29 @@ function stripImages(html) {
 }
 
 function saveLocalPages() {
+  // Tenta salvar com imagens (base64) para preservar conteúdo visual
   try {
-    // Salva versão sem base64 para não estourar quota do localStorage
+    localStorage.setItem('compragil_pages', JSON.stringify(localPages));
+    return;
+  } catch(e) { /* quota excedida — tenta versão sem base64 */ }
+
+  // Fallback: salva sem base64 se localStorage estiver cheio
+  try {
     const slim = {};
     Object.entries(localPages).forEach(([k, v]) => {
       slim[k] = { ...v, content: stripImages(v.content) };
     });
     localStorage.setItem('compragil_pages', JSON.stringify(slim));
-  } catch(e) {
-    console.warn('Erro ao salvar páginas local:', e);
-    // Tenta liberar espaço removendo conteúdo grande e salvando só títulos/ícones
+    console.warn('[localStorage] quota excedida, imagens removidas do cache local');
+  } catch(e2) {
+    // Último recurso: só títulos e ícones
     try {
       const minimal = {};
       Object.entries(localPages).forEach(([k, v]) => {
         minimal[k] = { title: v.title, icon: v.icon };
       });
       localStorage.setItem('compragil_pages', JSON.stringify(minimal));
-    } catch(e2) { console.warn('localStorage cheio mesmo após limpeza:', e2); }
+    } catch(e3) { console.warn('localStorage cheio mesmo após limpeza:', e3); }
   }
 }
 
@@ -740,8 +746,16 @@ function handleMessage(msg) {
   if (msg.type === 'request_pages') {
     // Servidor reiniciou vazio — envia todo o localStorage para restaurar os dados
     const dump = {};
+    const editor = document.getElementById('editor');
     Object.entries(localPages).forEach(([key, val]) => {
-      if (val && (val.content || val.title)) dump[key] = val;
+      if (val && (val.content || val.title)) {
+        // Para a página ativa, usa o HTML real do editor (preserva base64 das imagens)
+        if (key === activePageKey && editor) {
+          dump[key] = { ...val, content: editor.innerHTML };
+        } else {
+          dump[key] = val;
+        }
+      }
     });
     if (Object.keys(dump).length > 0) wsSend({ type: 'pages_dump', pages: dump });
   }
