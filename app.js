@@ -98,9 +98,9 @@ html,body,#app{height:100%;overflow:hidden}
 .layout{display:flex;height:100vh;background:#f0f4f8}
 .sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:var(--sidebar-bg);display:flex;flex-direction:column;transition:.3s;overflow:hidden}
 .sidebar.collapsed{width:56px;min-width:56px}
-.s-logo{padding:16px 14px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px;min-height:70px}
+.s-logo{padding:16px 14px;display:flex;align-items:center;gap:10px;min-height:70px}
 .sidebar.collapsed .s-logo{padding:16px 0 16px 9px}
-.toggle-btn{width:56px;min-width:56px;background:transparent;border:none;border-right:1px solid rgba(255,255,255,.1);color:var(--sidebar-txt);cursor:pointer;height:100%;display:flex;align-items:center;justify-content:center;transition:background .2s;flex-shrink:0}
+.toggle-btn{width:56px;min-width:56px;background:transparent;border:none;color:var(--sidebar-txt);cursor:pointer;height:100%;display:flex;align-items:center;justify-content:center;transition:background .2s;flex-shrink:0}
 .toggle-btn:hover{background:rgba(255,255,255,.1)}
 .toggle-btn svg{width:16px;height:16px;transition:transform .3s}
 .sidebar.collapsed~.main .toggle-btn svg{transform:rotate(180deg)}
@@ -121,7 +121,7 @@ html,body,#app{height:100%;overflow:hidden}
 .sidebar.collapsed .nav-label{opacity:0;width:0}
 .nav-tip{position:fixed;left:64px;background:#1e2340;color:#fff;font-size:11px;padding:4px 8px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;z-index:9999;border:1px solid rgba(255,255,255,.12)}
 .sidebar.collapsed .nav-item:hover .nav-tip{opacity:1}
-.online-section{padding:10px 8px 14px;border-top:1px solid rgba(255,255,255,.1)}
+.online-section{padding:10px 8px 14px}
 .online-title{font-size:10px;color:#a5b4fc;text-transform:uppercase;letter-spacing:.8px;padding:0 4px 6px;overflow:hidden;white-space:nowrap;transition:opacity .2s}
 .sidebar.collapsed .online-title{opacity:0}
 .online-list{display:flex;flex-direction:column;gap:4px}
@@ -131,8 +131,8 @@ html,body,#app{height:100%;overflow:hidden}
 .online-name{font-size:12px;color:#c7d2fe;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;transition:opacity .2s}
 .sidebar.collapsed .online-name{opacity:0;width:0}
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
-.topbar{background:var(--sidebar-bg);display:flex;align-items:center;padding:0 20px 0 0;height:var(--top);border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0}
-.topbar-title{color:#fff;font-size:14px;font-weight:600;padding:0 16px;border-right:1px solid rgba(255,255,255,.2);margin-right:12px;white-space:nowrap}
+.topbar{background:var(--sidebar-bg);display:flex;align-items:center;padding:0 20px 0 0;height:var(--top);flex-shrink:0}
+.topbar-title{color:#fff;font-size:14px;font-weight:600;padding:0 16px;margin-right:12px;white-space:nowrap}
 .topbar-user{color:var(--sidebar-txt);font-size:12px;margin-right:auto;white-space:nowrap}
 .topbar-actions{display:flex;align-items:center;gap:1px;padding:0 4px;background:rgba(0,0,0,.15);border-radius:10px;margin-right:4px}
 .topbar-actions button{background:transparent;border:none;color:rgba(255,255,255,.6);padding:6px 10px;border-radius:8px;font-size:13px;cursor:pointer;transition:background .18s,color .18s,transform .1s;white-space:nowrap;display:flex;align-items:center;gap:6px;position:relative;height:34px}
