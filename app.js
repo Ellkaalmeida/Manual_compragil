@@ -134,21 +134,23 @@ html,body,#app{height:100%;overflow:hidden}
 .topbar{background:var(--sidebar-bg);display:flex;align-items:center;padding:0 20px 0 0;height:var(--top);flex-shrink:0}
 .topbar-title{color:#fff;font-size:14px;font-weight:600;padding:0 16px;margin-right:12px;white-space:nowrap}
 .topbar-user{color:var(--sidebar-txt);font-size:12px;margin-right:auto;white-space:nowrap}
-.topbar-btns-area{display:flex;align-items:center;gap:4px;margin-right:12px}
-.topbar-collapse-btn{background:transparent;border:none;color:rgba(255,255,255,.35);width:16px;height:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:4px;transition:color .15s,background .15s;flex-shrink:0;padding:0}
-.topbar-collapse-btn:hover{color:rgba(255,255,255,.8);background:rgba(255,255,255,.08)}
+.topbar-actions-wrap{display:flex;align-items:center;gap:4px;margin-right:4px}
+.topbar-collapse-btn{background:transparent;border:none;color:rgba(255,255,255,.3);width:14px;height:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:4px;transition:color .15s;flex-shrink:0;padding:0}
+.topbar-collapse-btn:hover{color:rgba(255,255,255,.75)}
 .topbar-collapse-btn svg{transition:transform .3s ease}
 .topbar-collapse-btn.collapsed svg{transform:rotate(180deg)}
-.topbar-btns{display:flex;align-items:center;gap:4px;overflow:hidden;max-width:600px;transition:max-width .3s ease,opacity .25s ease;opacity:1}
-.topbar-btns.collapsed{max-width:0;opacity:0;pointer-events:none}
-.tb-action{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.75);height:30px;padding:0 10px;border-radius:7px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s,border-color .15s,color .15s;flex-shrink:0;white-space:nowrap}
-.tb-action:hover{background:rgba(99,102,241,.25);border-color:rgba(99,102,241,.4);color:#fff}
-.tb-action svg{width:14px;height:14px;flex-shrink:0;opacity:.85}
-.tb-action:hover svg{opacity:1}
-.tb-action .btn-label{font-size:12px;font-weight:500}
-.tb-action.tb-save{color:#a5b4fc;background:rgba(99,102,241,.2);border-color:rgba(99,102,241,.35)}
-.tb-action.tb-save:hover{background:rgba(99,102,241,.4);color:#fff;border-color:rgba(99,102,241,.55)}
-.topbar-vsep{width:1px;height:18px;background:rgba(255,255,255,.15);flex-shrink:0;margin:0 1px}
+.topbar-actions{display:flex;align-items:center;gap:1px;padding:0 4px;background:rgba(0,0,0,.15);border-radius:10px;overflow:hidden;max-width:600px;transition:max-width .3s ease,opacity .25s ease,padding .3s ease;opacity:1}
+.topbar-actions.collapsed{max-width:0;opacity:0;pointer-events:none;padding:0}
+.topbar-actions button{background:transparent;border:none;color:rgba(255,255,255,.6);padding:6px 10px;border-radius:8px;font-size:13px;cursor:pointer;transition:background .18s,color .18s,transform .1s;white-space:nowrap;display:flex;align-items:center;gap:6px;position:relative;height:34px}
+.topbar-actions button:hover{background:rgba(255,255,255,.13);color:#fff;transform:translateY(-1px)}
+.topbar-actions button:active{transform:translateY(0);background:rgba(255,255,255,.08)}
+.topbar-actions button .btn-label{font-size:10.5px;font-weight:500;letter-spacing:.2px}
+.topbar-action-sep{width:1px;height:20px;background:rgba(255,255,255,.12);margin:0 3px;flex-shrink:0}
+.btn-icon{width:15px;height:15px;flex-shrink:0;opacity:.85;transition:opacity .18s}
+.topbar-actions button:hover .btn-icon{opacity:1}
+#previewBtn{display:flex;align-items:center;gap:6px}
+.topbar-actions .btn-save{color:rgba(255,255,255,.9);background:rgba(99,102,241,.25);border:1px solid rgba(99,102,241,.35)}
+.topbar-actions .btn-save:hover{background:rgba(99,102,241,.5);color:#fff;border-color:rgba(99,102,241,.6)}
 .subnav{background:#fff;display:flex;align-items:center;flex-wrap:wrap;min-height:var(--sub);border-bottom:1px solid #e2e8f0;flex-shrink:0;overflow:visible}
 .subnav-item{font-size:12.5px;color:#64748b;padding:0 12px;height:var(--sub);display:flex;align-items:center;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:color .2s}
 .subnav-item:hover{color:#1e293b}
@@ -392,21 +394,20 @@ document.getElementById('app').innerHTML = `
       <span id="roleBadge" style="display:none"></span>
       <span style="flex:1"></span>
       <span class="topbar-user" id="breadcrumb" style="display:none">—</span>
-      <div class="topbar-btns-area" id="topbarBtnsArea">
-        <button class="topbar-collapse-btn" id="topbarCollapseBtn" title="Recolher/expandir ações">
+      <div class="topbar-actions-wrap">
+        <button class="topbar-collapse-btn" id="topbarCollapseBtn" title="Recolher/expandir">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
-        <div class="topbar-btns" id="topbarBtns">
-          <button class="tb-action" id="searchBtn" title="Buscar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span class="btn-label">Buscar</span></button>
-          <button class="tb-action" id="previewBtn" title="Visualizar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><span class="btn-label">Visualizar</span></button>
-          <button class="tb-action" id="exportBtn" title="Exportar PDF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg><span class="btn-label">PDF</span></button>
-          <div class="topbar-vsep" id="editSep" style="display:none"></div>
-          <button class="tb-action" id="clearBtn" style="display:none" title="Limpar página"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg><span class="btn-label">Limpar</span></button>
-          <button class="tb-action tb-save" id="saveBtn" style="display:none" title="Salvar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg><span class="btn-label">Salvar</span></button>
-          <div class="topbar-vsep" id="adminSep" style="display:none"></div>
-          <button class="tb-action" id="adminBtn" style="display:none" title="Admin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span class="btn-label">Admin</span></button>
-          <div class="topbar-vsep"></div>
-          <button class="tb-action" id="logoutBtn" title="Sair"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span class="btn-label">Sair</span></button>
+        <div class="topbar-actions" id="topbarActions">
+          <button class="search-btn" id="searchBtn" title="Buscar (Ctrl+K)"><svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span class="btn-label">Buscar</span></button>
+          <button id="previewBtn" title="Visualizar"><svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><span class="btn-label">Visualizar</span></button>
+          <button id="exportBtn" title="Exportar PDF"><svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg><span class="btn-label">PDF</span></button>
+          <div class="topbar-action-sep" id="editSep" style="display:none"></div>
+          <button id="clearBtn" title="Limpar página" style="display:none"><svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg><span class="btn-label">Limpar</span></button>
+          <button class="btn-save" id="saveBtn" title="Salvar" style="display:none"><svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg><span class="btn-label">Salvar</span></button>
+          <div class="topbar-action-sep" id="adminSep" style="display:none"></div>
+          <button id="adminBtn" title="Gerenciar usuários" style="display:none"><svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span class="btn-label">Admin</span></button>
+          <button id="logoutBtn" title="Sair"><svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span class="btn-label">Sair</span></button>
         </div>
       </div>
     </div>
@@ -1835,14 +1836,14 @@ function showClientsPanel() {
   document.getElementById('clientsPanel').classList.add('visible');
   document.getElementById('editorScroll').style.display = 'none';
   document.getElementById('toolbar').style.display = 'none';
-  document.querySelector('.topbar-btns-area').style.visibility = 'hidden';
+  document.querySelector('.topbar-actions-wrap').style.visibility = 'hidden';
   renderClientsPanel();
 }
 
 function hideClientsPanel() {
   document.getElementById('clientsPanel').classList.remove('visible');
   document.getElementById('editorScroll').style.display = '';
-  document.querySelector('.topbar-btns-area').style.visibility = '';
+  document.querySelector('.topbar-actions-wrap').style.visibility = '';
 }
 
 // ─── Image resize interaction ──────────────────────────────────────────────
@@ -2328,9 +2329,9 @@ function showConfirm({ title, message, svgIcon, confirmLabel = 'Confirmar', conf
 function setupTopbarButtons() {
   // Colapsar/expandir grupo de botões
   const collapseBtn = document.getElementById('topbarCollapseBtn');
-  const btnsEl      = document.getElementById('topbarBtns');
+  const actionsEl   = document.getElementById('topbarActions');
   collapseBtn.addEventListener('click', () => {
-    const isCollapsed = btnsEl.classList.toggle('collapsed');
+    const isCollapsed = actionsEl.classList.toggle('collapsed');
     collapseBtn.classList.toggle('collapsed', isCollapsed);
   });
 
