@@ -134,20 +134,21 @@ html,body,#app{height:100%;overflow:hidden}
 .topbar{background:var(--sidebar-bg);display:flex;align-items:center;padding:0 20px 0 0;height:var(--top);flex-shrink:0}
 .topbar-title{color:#fff;font-size:14px;font-weight:600;padding:0 16px;margin-right:12px;white-space:nowrap}
 .topbar-user{color:var(--sidebar-txt);font-size:12px;margin-right:auto;white-space:nowrap}
-.topbar-menu-wrap{position:relative;margin-right:8px}
-.topbar-menu-btn{background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.85);width:34px;height:34px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .18s;flex-shrink:0}
-.topbar-menu-btn:hover,.topbar-menu-btn.open{background:rgba(255,255,255,.2);color:#fff}
-.topbar-actions{position:absolute;top:calc(100% + 10px);right:0;background:#1e2340;border-radius:12px;padding:6px;display:none;flex-direction:column;gap:2px;z-index:9999;box-shadow:0 10px 36px rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.1);min-width:170px}
+.topbar-menu-wrap{position:relative;margin-right:12px}
+.topbar-menu-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.75);width:32px;height:32px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .18s,border-color .18s,color .18s;flex-shrink:0}
+.topbar-menu-btn:hover,.topbar-menu-btn.open{background:rgba(99,102,241,.3);border-color:rgba(99,102,241,.5);color:#fff}
+.topbar-actions{position:absolute;top:calc(100% + 8px);right:0;background:#2d3561;border-radius:12px;padding:5px;display:none;flex-direction:column;gap:1px;z-index:9999;box-shadow:0 16px 48px rgba(0,0,0,.5),0 0 0 1px rgba(99,102,241,.2);min-width:190px;overflow:hidden}
+.topbar-actions::before{content:'';position:absolute;top:-5px;right:10px;width:10px;height:10px;background:#2d3561;border-top:1px solid rgba(99,102,241,.2);border-left:1px solid rgba(99,102,241,.2);transform:rotate(45deg)}
 .topbar-actions.open{display:flex}
-.topbar-actions button{background:transparent;border:none;color:rgba(255,255,255,.7);padding:8px 12px;border-radius:8px;font-size:13px;cursor:pointer;transition:background .15s,color .15s;white-space:nowrap;display:flex;align-items:center;gap:10px;width:100%}
-.topbar-actions button:hover{background:rgba(255,255,255,.1);color:#fff}
-.topbar-actions button .btn-label{font-size:12.5px;font-weight:500}
-.topbar-action-sep{height:1px;background:rgba(255,255,255,.1);margin:3px 6px;flex-shrink:0}
-.btn-icon{width:15px;height:15px;flex-shrink:0;opacity:.8}
+.topbar-actions button{background:transparent;border:none;color:rgba(255,255,255,.65);padding:9px 13px;border-radius:8px;font-size:13px;cursor:pointer;transition:background .15s,color .15s;white-space:nowrap;display:flex;align-items:center;gap:11px;width:100%;text-align:left}
+.topbar-actions button:hover{background:rgba(99,102,241,.25);color:#fff}
+.topbar-actions button .btn-label{font-size:12.5px;font-weight:500;letter-spacing:.1px}
+.topbar-action-sep{height:1px;background:rgba(255,255,255,.08);margin:3px 8px;flex-shrink:0}
+.btn-icon{width:15px;height:15px;flex-shrink:0;opacity:.7;transition:opacity .15s}
 .topbar-actions button:hover .btn-icon{opacity:1}
-#previewBtn{display:flex;align-items:center;gap:10px}
-.topbar-actions .btn-save{color:rgba(255,255,255,.9);background:rgba(99,102,241,.2)}
-.topbar-actions .btn-save:hover{background:rgba(99,102,241,.45);color:#fff}
+#previewBtn{display:flex;align-items:center;gap:11px}
+.topbar-actions .btn-save{color:#a5b4fc;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.2)}
+.topbar-actions .btn-save:hover{background:rgba(99,102,241,.35);color:#fff;border-color:rgba(99,102,241,.4)}
 .subnav{background:#fff;display:flex;align-items:center;flex-wrap:wrap;min-height:var(--sub);border-bottom:1px solid #e2e8f0;flex-shrink:0;overflow:visible}
 .subnav-item{font-size:12.5px;color:#64748b;padding:0 12px;height:var(--sub);display:flex;align-items:center;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:color .2s}
 .subnav-item:hover{color:#1e293b}
