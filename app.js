@@ -2294,8 +2294,11 @@ function setupTopbarButtons() {
   <style>
     @page { size: A4; margin: 0 }
     *{margin:0;padding:0;box-sizing:border-box}
-    html,body{height:auto!important;min-height:0!important}
-    body{font-family:Inter,Arial,sans-serif;font-size:12px;line-height:1.75;color:#334155;-webkit-print-color-adjust:exact;print-color-adjust:exact;padding:1.8cm 2cm 1.2cm}
+    html{height:fit-content!important}
+    body{font-family:Inter,Arial,sans-serif;font-size:12px;line-height:1.75;color:#334155;-webkit-print-color-adjust:exact;print-color-adjust:exact;width:210mm;margin:0 auto;height:fit-content!important}
+
+    /* ── Wrapper interno ── */
+    #pdf-root{padding:1.8cm 2cm 1.2cm}
 
     /* ── Título da página ── */
     .page-title{font-size:22px;font-weight:700;color:#0f172a;margin-bottom:6px;line-height:1.3}
@@ -2322,8 +2325,7 @@ function setupTopbarButtons() {
 
     /* ── Impressão ── */
     @media print{
-      html,body{height:auto!important;min-height:0!important}
-      body{padding-bottom:0!important}
+      html,body{height:fit-content!important}
       pre,blockquote,table,img{page-break-inside:avoid}
       h1,h2,h3{page-break-after:avoid}
       p,li{orphans:3;widows:3}
@@ -2332,9 +2334,11 @@ function setupTopbarButtons() {
   </style>
 </head>
 <body>
-  <div class="page-title">${icon} ${title}</div>
-  <hr class="title-sep"/>
-  ${body}
+  <div id="pdf-root">
+    <div class="page-title">${icon} ${title}</div>
+    <hr class="title-sep"/>
+    ${body}
+  </div>
   <script>window.onload=function(){setTimeout(function(){window.print();},800)};<\/script>
 </body>
 </html>`;
