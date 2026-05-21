@@ -99,7 +99,7 @@ html,body,#app{height:100%;overflow:hidden}
 .sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:var(--sidebar-bg);display:flex;flex-direction:column;transition:.3s;overflow:hidden}
 .sidebar.collapsed{width:56px;min-width:56px}
 .s-logo{padding:16px 14px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px;min-height:70px}
-.sidebar.collapsed .s-logo{padding:16px 0;justify-content:center}
+.sidebar.collapsed .s-logo{padding:16px 0 16px 9px}
 .toggle-btn{width:var(--sidebar-w);min-width:var(--sidebar-w);background:transparent;border:none;border-right:1px solid rgba(255,255,255,.1);color:var(--sidebar-txt);cursor:pointer;height:100%;display:flex;align-items:center;justify-content:center;transition:width .3s,min-width .3s,background .2s;flex-shrink:0}
 .toggle-btn:hover{background:rgba(255,255,255,.1)}
 .toggle-btn svg{width:16px;height:16px;transition:transform .3s}
