@@ -2291,9 +2291,9 @@ function setupTopbarButtons() {
   <title>${title} — Manual CompraGil</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
-    @page { size: A4; margin: 1.8cm 2cm 2cm; }
+    @page { size: A4; margin: 0 }
     *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:Inter,Arial,sans-serif;font-size:12px;line-height:1.75;color:#334155;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    body{font-family:Inter,Arial,sans-serif;font-size:12px;line-height:1.75;color:#334155;-webkit-print-color-adjust:exact;print-color-adjust:exact;padding:1.8cm 2cm 2cm}
 
     /* ── Cabeçalho do documento ── */
     .doc-header{display:flex;align-items:center;justify-content:space-between;padding-bottom:14px;border-bottom:3px solid #2d3561;margin-bottom:28px}
