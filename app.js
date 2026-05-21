@@ -1872,11 +1872,30 @@ function setupImageInteraction() {
 
   document.getElementById('_itDelete').addEventListener('click', () => {
     if (!selectedImg) return;
-    if (confirm('Remover esta imagem?')) {
-      selectedImg.remove();
+    const imgToRemove = selectedImg;
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:99999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px)';
+    overlay.innerHTML = `
+      <div style="background:#fff;border-radius:14px;width:340px;max-width:92vw;box-shadow:0 20px 50px rgba(0,0,0,.3);overflow:hidden;font-family:Inter,sans-serif">
+        <div style="background:#2d3561;padding:14px 18px;display:flex;align-items:center;gap:10px">
+          <span style="font-size:18px">🗑</span>
+          <span style="color:#fff;font-size:13px;font-weight:700">Remover imagem</span>
+        </div>
+        <div style="padding:20px 18px 8px;color:#475569;font-size:13px">Deseja remover esta imagem do conteúdo?</div>
+        <div style="padding:12px 18px 16px;display:flex;gap:8px;justify-content:flex-end">
+          <button id="_imgDelCancel" style="border:1.5px solid #e2e8f0;background:#fff;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:600;color:#64748b;cursor:pointer">Cancelar</button>
+          <button id="_imgDelConfirm" style="background:#f43f5e;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer">Remover</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    document.getElementById('_imgDelCancel').addEventListener('click', () => overlay.remove());
+    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+    document.getElementById('_imgDelConfirm').addEventListener('click', () => {
+      overlay.remove();
+      imgToRemove.remove();
       hideToolbar();
       savePage();
-    }
+    });
   });
 
   document.addEventListener('mousedown', e => {
