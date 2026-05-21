@@ -1248,6 +1248,7 @@ function setupSearch() {
       item.addEventListener('click', () => {
         // Navega para a página encontrada
         savePage();
+        hideClientsPanel(); // garante que o editor fica visível mesmo vindo do painel Clientes
         activePageKey = pageKey;
         if (pageKey.startsWith('sidebar-')) {
           const idx = parseInt(pageKey.replace('sidebar-', ''));
