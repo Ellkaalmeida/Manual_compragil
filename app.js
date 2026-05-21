@@ -2282,7 +2282,6 @@ function setupTopbarButtons() {
     const title = document.getElementById('pageTitle').value || 'Página';
     const icon  = document.getElementById('iconBtn').textContent;
     const body  = document.getElementById('editor').innerHTML;
-    const dateStr = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
 
     const html = `<!DOCTYPE html>
 <html lang="pt-BR">
@@ -2294,14 +2293,6 @@ function setupTopbarButtons() {
     @page { size: A4; margin: 0 }
     *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:Inter,Arial,sans-serif;font-size:12px;line-height:1.75;color:#334155;-webkit-print-color-adjust:exact;print-color-adjust:exact;padding:1.8cm 2cm 2cm}
-
-    /* ── Cabeçalho do documento ── */
-    .doc-header{display:flex;align-items:center;justify-content:space-between;padding-bottom:14px;border-bottom:3px solid #2d3561;margin-bottom:28px}
-    .doc-brand{display:flex;align-items:center;gap:10px}
-    .doc-logo{width:36px;height:36px;background:#2d3561;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px;flex-shrink:0}
-    .doc-brand-name{font-size:13px;font-weight:700;color:#2d3561;letter-spacing:.02em}
-    .doc-brand-sub{font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;margin-top:1px}
-    .doc-date{font-size:10px;color:#94a3b8;text-align:right;line-height:1.5}
 
     /* ── Título da página ── */
     .page-title{font-size:22px;font-weight:700;color:#0f172a;margin-bottom:6px;line-height:1.3}
@@ -2337,17 +2328,6 @@ function setupTopbarButtons() {
   </style>
 </head>
 <body>
-  <div class="doc-header">
-    <div class="doc-brand">
-      <div class="doc-logo">C</div>
-      <div>
-        <div class="doc-brand-name">COMPRÁGIL</div>
-        <div class="doc-brand-sub">Manual do Sistema</div>
-      </div>
-    </div>
-    <div class="doc-date">${dateStr}</div>
-  </div>
-
   <div class="page-title">${icon} ${title}</div>
   <hr class="title-sep"/>
   ${body}
