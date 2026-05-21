@@ -234,13 +234,19 @@ html,body,#app{height:100%;overflow:hidden}
 .notes-link-del{border:none;border-left:1.5px solid #f1f5f9;background:none;cursor:pointer;color:#cbd5e1;padding:0 13px;display:flex;align-items:center;flex-shrink:0;transition:background .15s,color .15s}
 .notes-link-del:hover{background:#fee2e2;color:#f43f5e}
 .notes-empty{font-size:12px;color:#94a3b8;text-align:center;padding:8px 0;font-style:italic;margin:0}
-.notes-add-row{display:flex;flex-direction:column;gap:8px}
+.notes-btn-add-trigger{width:100%;padding:9px;background:transparent;color:#6366f1;border:1.5px dashed #c7d2fe;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s,border-color .15s;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:4px}
+.notes-btn-add-trigger:hover{background:#eef2ff;border-color:#6366f1}
+.notes-add-form{display:none;flex-direction:column;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid #e8edf4}
+.notes-add-form.open{display:flex}
 .notes-input-wrap{position:relative;display:flex;align-items:center}
 .notes-input-wrap svg{position:absolute;left:11px;color:#94a3b8;flex-shrink:0;pointer-events:none}
 .notes-input-wrap input{width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px 9px 34px;font-size:13px;color:#334155;background:#f8fafc;font-family:Inter,sans-serif;transition:border .2s,background .2s;box-sizing:border-box}
 .notes-input-wrap input:focus{outline:none;border-color:#6366f1;background:#fff;box-shadow:0 0 0 3px rgba(99,102,241,.1)}
-.notes-btn-add{width:100%;padding:10px;background:#2d3561;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:2px}
-.notes-btn-add:hover{background:#6366f1}
+.notes-form-actions{display:flex;gap:8px}
+.notes-btn-confirm{flex:1;padding:9px;background:#2d3561;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.notes-btn-confirm:hover{background:#6366f1}
+.notes-btn-cancel{padding:9px 14px;background:#f1f5f9;color:#64748b;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s}
+.notes-btn-cancel:hover{background:#e2e8f0}
 .notes-footer{padding:14px 20px;background:#fff;border-top:1px solid #e8edf4;flex-shrink:0}
 .notes-btn-save{width:100%;padding:11px;background:#2d3561;color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:7px}
 .notes-btn-save:hover{background:#6366f1}
@@ -512,7 +518,11 @@ document.getElementById('app').innerHTML = `
         Links Úteis
       </p>
       <div class="notes-link-list" id="notesLinkList"></div>
-      <div class="notes-add-row">
+      <button class="notes-btn-add-trigger" id="notesAddTrigger">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Adicionar link
+      </button>
+      <div class="notes-add-form" id="notesAddForm">
         <div class="notes-input-wrap">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           <input type="text" id="notesLinkLabel" placeholder="Nome do link" />
@@ -521,10 +531,13 @@ document.getElementById('app').innerHTML = `
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
           <input type="text" id="notesLinkUrl" placeholder="https://..." />
         </div>
-        <button class="notes-btn-add" id="notesAddLinkBtn">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Adicionar link
-        </button>
+        <div class="notes-form-actions">
+          <button class="notes-btn-confirm" id="notesAddLinkBtn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Confirmar
+          </button>
+          <button class="notes-btn-cancel" id="notesAddCancel">Cancelar</button>
+        </div>
       </div>
     </div>
   </div>
@@ -628,6 +641,20 @@ function setupNotesDrawer() {
   document.getElementById('notesOverlay').addEventListener('click', closeNotesDrawer);
   document.getElementById('notesCloseBtn').addEventListener('click', closeNotesDrawer);
   document.getElementById('notesSaveBtn').addEventListener('click', saveNotes);
+
+  // Toggle formulário de adicionar link
+  document.getElementById('notesAddTrigger').addEventListener('click', () => {
+    document.getElementById('notesAddForm').classList.add('open');
+    document.getElementById('notesAddTrigger').style.display = 'none';
+    document.getElementById('notesLinkLabel').focus();
+  });
+  document.getElementById('notesAddCancel').addEventListener('click', () => {
+    document.getElementById('notesAddForm').classList.remove('open');
+    document.getElementById('notesAddTrigger').style.display = '';
+    document.getElementById('notesLinkLabel').value = '';
+    document.getElementById('notesLinkUrl').value = '';
+  });
+
   document.getElementById('notesAddLinkBtn').addEventListener('click', () => {
     const label = document.getElementById('notesLinkLabel').value.trim();
     const url   = document.getElementById('notesLinkUrl').value.trim();
@@ -635,6 +662,8 @@ function setupNotesDrawer() {
     notesLinks.push({ label, url });
     document.getElementById('notesLinkLabel').value = '';
     document.getElementById('notesLinkUrl').value = '';
+    document.getElementById('notesAddForm').classList.remove('open');
+    document.getElementById('notesAddTrigger').style.display = '';
     renderNotesLinks();
   });
   document.getElementById('notesLinkUrl').addEventListener('keydown', e => {
