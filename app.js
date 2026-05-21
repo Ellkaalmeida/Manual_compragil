@@ -219,8 +219,11 @@ html,body,#app{height:100%;overflow:hidden}
 .notes-close-btn:hover{background:rgba(255,255,255,.22);color:#fff}
 .notes-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:20px;display:flex;flex-direction:column;gap:20px}
 .notes-section{background:#fff;border-radius:12px;padding:16px;border:1px solid #e8edf4;box-shadow:0 1px 4px rgba(15,23,42,.05)}
-.notes-section-label{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#2d3561;margin:0 0 12px}
+.notes-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.notes-section-label{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#2d3561;margin:0}
 .notes-section-label svg{width:14px;height:14px;color:#6366f1;flex-shrink:0}
+.notes-btn-inline-add{background:#eef2ff;border:none;color:#6366f1;width:26px;height:26px;border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s;flex-shrink:0}
+.notes-btn-inline-add:hover{background:#6366f1;color:#fff}
 .notes-textarea{width:100%;min-height:150px;border:1.5px solid #e2e8f0;border-radius:8px;padding:11px 13px;font-size:13px;line-height:1.7;color:#334155;background:#f8fafc;resize:vertical;font-family:Inter,sans-serif;box-sizing:border-box;transition:border .2s,background .2s}
 .notes-textarea:focus{outline:none;border-color:#6366f1;background:#fff;box-shadow:0 0 0 3px rgba(99,102,241,.1)}
 .notes-link-list{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
@@ -517,15 +520,13 @@ document.getElementById('app').innerHTML = `
       <textarea class="notes-textarea" id="notesIntro" placeholder="Escreva aqui uma nota de contexto geral ou avisos importantes do manual..."></textarea>
     </div>
     <div class="notes-section">
-      <p class="notes-section-label">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-        Links Úteis
-      </p>
+      <div class="notes-section-header">
+        <p class="notes-section-label">Links Úteis</p>
+        <button class="notes-btn-inline-add" id="notesAddTrigger" title="Adicionar link">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+      </div>
       <div class="notes-link-list" id="notesLinkList"></div>
-      <button class="notes-btn-add-trigger" id="notesAddTrigger">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Adicionar link
-      </button>
       <div class="notes-add-form" id="notesAddForm">
         <div class="notes-input-wrap">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -650,12 +651,12 @@ function setupNotesDrawer() {
   // Toggle formulário de adicionar link
   document.getElementById('notesAddTrigger').addEventListener('click', () => {
     document.getElementById('notesAddForm').classList.add('open');
-    document.getElementById('notesAddTrigger').style.display = 'none';
+    document.getElementById('notesAddTrigger').style.visibility = 'hidden';
     document.getElementById('notesLinkLabel').focus();
   });
   document.getElementById('notesAddCancel').addEventListener('click', () => {
     document.getElementById('notesAddForm').classList.remove('open');
-    document.getElementById('notesAddTrigger').style.display = '';
+    document.getElementById('notesAddTrigger').style.visibility = '';
     document.getElementById('notesLinkLabel').value = '';
     document.getElementById('notesLinkUrl').value = '';
   });
@@ -668,7 +669,7 @@ function setupNotesDrawer() {
     document.getElementById('notesLinkLabel').value = '';
     document.getElementById('notesLinkUrl').value = '';
     document.getElementById('notesAddForm').classList.remove('open');
-    document.getElementById('notesAddTrigger').style.display = '';
+    document.getElementById('notesAddTrigger').style.visibility = '';
     renderNotesLinks();
   });
   document.getElementById('notesLinkUrl').addEventListener('keydown', e => {
