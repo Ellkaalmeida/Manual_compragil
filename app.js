@@ -2281,7 +2281,9 @@ function setupTopbarButtons() {
     savePage();
     const title = document.getElementById('pageTitle').value || 'Página';
     const icon  = document.getElementById('iconBtn').textContent;
-    const body  = document.getElementById('editor').innerHTML;
+    const rawBody = document.getElementById('editor').innerHTML;
+    // Remove parágrafos/breaks vazios do final que causam página em branco
+    const body = rawBody.replace(/(\s*<p[^>]*>\s*(<br\s*\/?>)?\s*<\/p>\s*)+$/gi, '').replace(/(\s*<br\s*\/?>)+\s*$/gi, '').trim();
 
     const html = `<!DOCTYPE html>
 <html lang="pt-BR">
@@ -2292,7 +2294,8 @@ function setupTopbarButtons() {
   <style>
     @page { size: A4; margin: 0 }
     *{margin:0;padding:0;box-sizing:border-box}
-    html,body{height:auto!important}
+    html{height:auto!important;overflow:hidden}
+    body{height:auto!important}
     body{font-family:Inter,Arial,sans-serif;font-size:12px;line-height:1.75;color:#334155;-webkit-print-color-adjust:exact;print-color-adjust:exact;padding:1.8cm 2cm 2cm}
 
     /* ── Título da página ── */
