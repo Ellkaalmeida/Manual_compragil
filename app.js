@@ -99,12 +99,11 @@ html,body,#app{height:100%;overflow:hidden}
 .sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:var(--sidebar-bg);display:flex;flex-direction:column;transition:.3s;overflow:hidden}
 .sidebar.collapsed{width:56px;min-width:56px}
 .s-logo{padding:16px 14px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px;min-height:70px}
-.s-toggle{border-top:1px solid rgba(255,255,255,.1);padding:10px 8px;display:flex;align-items:center;justify-content:flex-end;flex-shrink:0}
-.sidebar.collapsed .s-toggle{justify-content:center}
-.s-toggle-btn{background:rgba(255,255,255,.08);border:none;color:#c7d2fe;width:32px;height:28px;border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,color .2s}
-.s-toggle-btn:hover{background:rgba(255,255,255,.18);color:#fff}
-.s-toggle-btn svg{width:15px;height:15px;transition:transform .3s}
-.sidebar.collapsed .s-toggle-btn svg{transform:rotate(180deg)}
+.toggle-btn{width:var(--sidebar-w);min-width:var(--sidebar-w);background:transparent;border:none;border-right:1px solid rgba(255,255,255,.1);color:var(--sidebar-txt);cursor:pointer;height:100%;display:flex;align-items:center;justify-content:center;transition:width .3s,min-width .3s,background .2s;flex-shrink:0}
+.toggle-btn:hover{background:rgba(255,255,255,.1)}
+.toggle-btn svg{width:16px;height:16px;transition:transform .3s}
+.sidebar.collapsed~.main .toggle-btn{width:56px;min-width:56px}
+.sidebar.collapsed~.main .toggle-btn svg{transform:rotate(180deg)}
 .logo-icon{width:38px;height:38px;min-width:38px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:var(--sidebar-bg)}
 .logo-text{overflow:hidden;white-space:nowrap;transition:opacity .2s}
 .logo-text strong{display:block;font-size:13px;font-weight:700;color:#fff;letter-spacing:.5px}
@@ -362,15 +361,13 @@ document.getElementById('app').innerHTML = `
       <div class="online-title">● Online agora</div>
       <div class="online-list" id="onlineList"></div>
     </div>
-    <div class="s-toggle">
-      <button class="s-toggle-btn" id="toggleBtn" title="Recolher/expandir menu">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-      </button>
-    </div>
   </aside>
 
   <div class="main">
     <div class="topbar">
+      <button class="toggle-btn" id="toggleBtn" title="Recolher/expandir menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
       <span class="topbar-title">Manual Compra ágil Web</span>
       <span id="roleBadge" style="display:none"></span>
       <span style="flex:1"></span>
