@@ -1752,7 +1752,7 @@ function renderClientsPanel() {
       .filter(c => !c.status || c.status === 'Ativo')
       .map(c => c.bank)
       .filter(Boolean);
-    if (!ativos.length) { alert('Nenhum banco ativo encontrado.'); return; }
+    if (!ativos.length) { showAlert({ title: 'Atenção', message: 'Nenhum banco ativo encontrado.' }); return; }
     navigator.clipboard.writeText(ativos.join('\n')).then(() => {
       const orig = this.textContent;
       this.textContent = `✓ ${ativos.length} copiados`;
@@ -2209,7 +2209,28 @@ function adminFeedback(text, isError = false) {
   setTimeout(() => { el.style.opacity = '0'; }, 3000);
 }
 
-// ─── Modal de confirmação padrão ───────────────────────────────────────────
+// ─── Modais padrão do sistema ──────────────────────────────────────────────
+function showAlert({ title, message, svgIcon }) {
+  const _SVG_INFO = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2d3561" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+  const icon = svgIcon || _SVG_INFO;
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:99999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px)';
+  overlay.innerHTML = `
+    <div style="background:#fff;border-radius:14px;width:340px;max-width:92vw;box-shadow:0 20px 50px rgba(0,0,0,.3);overflow:hidden;font-family:Inter,sans-serif">
+      <div style="background:#2d3561;padding:14px 18px;display:flex;align-items:center;gap:10px">
+        <div style="width:32px;height:32px;background:#fff;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${icon}</div>
+        <span style="color:#fff;font-size:13px;font-weight:700">${title}</span>
+      </div>
+      <div style="padding:20px 18px 8px;color:#475569;font-size:13px">${message}</div>
+      <div style="padding:12px 18px 16px;display:flex;justify-content:flex-end">
+        <button id="_alOk" style="background:#2d3561;color:#fff;border:none;border-radius:8px;padding:8px 22px;font-size:13px;font-weight:600;cursor:pointer">OK</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  document.getElementById('_alOk').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+}
+
 function showConfirm({ title, message, svgIcon, confirmLabel = 'Confirmar', confirmColor = '#f43f5e', onConfirm }) {
   const _SVG_TRASH = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2d3561" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>`;
   const icon = svgIcon || _SVG_TRASH;
