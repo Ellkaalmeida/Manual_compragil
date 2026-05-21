@@ -116,6 +116,8 @@ function scheduleWhitelistGitHubSave() {
       if (res.content && res.content.sha) {
         _ghWlSha = res.content.sha;
         console.log('[github] whitelist salva com sucesso');
+      } else {
+        console.error('[github] whitelist save falhou:', JSON.stringify(res).substring(0, 300));
       }
     } catch (e) { console.error('[github] whitelist save error:', e.message); }
   }, 5000); // Salva rapidamente — permissões são críticas
@@ -156,7 +158,8 @@ if (GH_TOKEN) {
   // Restaura whitelist do GitHub (filesystem do Render é efêmero)
   loadWhitelistFromGitHub().then(ghWl => {
     if (ghWl && Object.keys(ghWl).length > 0) {
-      Object.assign(whitelist, ghWl);
+      // Substitui completamente (não merge) para preservar deleções feitas via interface
+      whitelist = ghWl;
       saveWhitelist(whitelist);
       console.log('[github] whitelist restaurada com sucesso');
     }
