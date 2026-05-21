@@ -197,7 +197,8 @@ const server = http.createServer((req, res) => {
   }
 
   // Serve arquivos estáticos (frontend)
-  let filePath = req.url === '/' ? '/Index.html' : req.url;
+  const urlPath = req.url.split('?')[0]; // ignora query string (?v=N)
+  let filePath = urlPath === '/' ? '/Index.html' : urlPath;
   filePath = path.join(__dirname, filePath);
   const ext = path.extname(filePath).toLowerCase();
   if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
