@@ -131,26 +131,27 @@ html,body,#app{height:100%;overflow:hidden}
 .online-name{font-size:12px;color:#c7d2fe;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;transition:opacity .2s}
 .sidebar.collapsed .online-name{opacity:0;width:0}
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
-.topbar{background:linear-gradient(90deg,#2a3260 0%,#252d58 100%);display:flex;align-items:center;padding:0 20px 0 0;height:var(--top);flex-shrink:0;box-shadow:0 2px 12px rgba(0,0,0,.2)}
-.topbar-title{color:rgba(255,255,255,.9);font-size:13.5px;font-weight:600;padding:0 16px;margin-right:12px;white-space:nowrap;letter-spacing:.2px}
-.topbar-user{color:var(--sidebar-txt);font-size:12px;margin-right:auto;white-space:nowrap}
-.topbar-actions-wrap{display:flex;align-items:center;gap:4px;margin-right:4px}
-.topbar-collapse-btn{background:transparent;border:none;color:rgba(255,255,255,.3);width:14px;height:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:4px;transition:color .15s;flex-shrink:0;padding:0}
-.topbar-collapse-btn:hover{color:rgba(255,255,255,.75)}
+.topbar{background:linear-gradient(90deg,#2a3260 0%,#252d58 100%);display:flex;align-items:center;padding:0 16px 0 0;height:var(--top);flex-shrink:0;box-shadow:0 2px 14px rgba(0,0,0,.22)}
+.toggle-btn{border-right:1px solid rgba(255,255,255,.07)!important}
+.topbar-title{color:rgba(255,255,255,.88);font-size:13px;font-weight:600;padding:0 16px;margin-right:auto;white-space:nowrap;letter-spacing:.25px}
+.topbar-user{color:var(--sidebar-txt);font-size:12px;white-space:nowrap}
+.topbar-actions-wrap{display:flex;align-items:center;gap:6px}
+.topbar-collapse-btn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.4);width:22px;height:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:6px;transition:background .15s,color .15s,border-color .15s;flex-shrink:0;padding:0}
+.topbar-collapse-btn:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.8)}
 .topbar-collapse-btn svg{transition:transform .3s ease}
 .topbar-collapse-btn.collapsed svg{transform:rotate(180deg)}
-.topbar-actions{display:flex;align-items:center;gap:1px;padding:0 4px;background:rgba(0,0,0,.15);border-radius:10px;overflow:hidden;max-width:600px;transition:max-width .3s ease,opacity .25s ease,padding .3s ease;opacity:1}
-.topbar-actions.collapsed{max-width:0;opacity:0;pointer-events:none;padding:0}
-.topbar-actions button{background:transparent;border:none;color:rgba(255,255,255,.6);padding:6px 10px;border-radius:8px;font-size:13px;cursor:pointer;transition:background .18s,color .18s,transform .1s;white-space:nowrap;display:flex;align-items:center;gap:6px;position:relative;height:34px}
-.topbar-actions button:hover{background:rgba(255,255,255,.13);color:#fff;transform:translateY(-1px)}
-.topbar-actions button:active{transform:translateY(0);background:rgba(255,255,255,.08)}
+.topbar-actions{display:flex;align-items:center;gap:1px;padding:0 4px;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.07);border-radius:10px;overflow:hidden;max-width:600px;transition:max-width .3s ease,opacity .25s ease,padding .3s ease;opacity:1}
+.topbar-actions.collapsed{max-width:0;opacity:0;pointer-events:none;padding:0;border-color:transparent}
+.topbar-actions button{background:transparent;border:none;color:rgba(255,255,255,.55);padding:5px 10px;border-radius:7px;font-size:13px;cursor:pointer;transition:background .15s,color .15s;white-space:nowrap;display:flex;align-items:center;gap:6px;position:relative;height:32px}
+.topbar-actions button:hover{background:rgba(255,255,255,.1);color:#fff}
+.topbar-actions button:active{background:rgba(255,255,255,.06)}
 .topbar-actions button .btn-label{font-size:10.5px;font-weight:500;letter-spacing:.2px}
-.topbar-action-sep{width:1px;height:20px;background:rgba(255,255,255,.12);margin:0 3px;flex-shrink:0}
-.btn-icon{width:15px;height:15px;flex-shrink:0;opacity:.85;transition:opacity .18s}
+.topbar-action-sep{width:1px;height:18px;background:rgba(255,255,255,.1);margin:0 2px;flex-shrink:0}
+.btn-icon{width:14px;height:14px;flex-shrink:0;opacity:.8;transition:opacity .15s}
 .topbar-actions button:hover .btn-icon{opacity:1}
 #previewBtn{display:flex;align-items:center;gap:6px}
-.topbar-actions .btn-save{color:rgba(255,255,255,.9);background:rgba(99,102,241,.25);border:1px solid rgba(99,102,241,.35)}
-.topbar-actions .btn-save:hover{background:rgba(99,102,241,.5);color:#fff;border-color:rgba(99,102,241,.6)}
+.topbar-actions .btn-save{color:#a5b4fc;background:rgba(99,102,241,.22);border:1px solid rgba(99,102,241,.3)}
+.topbar-actions .btn-save:hover{background:rgba(99,102,241,.42);color:#fff;border-color:rgba(99,102,241,.55)}
 .subnav{background:#fff;display:flex;align-items:center;flex-wrap:wrap;min-height:var(--sub);border-bottom:1px solid #e2e8f0;flex-shrink:0;overflow:visible}
 .subnav-item{font-size:12.5px;color:#64748b;padding:0 12px;height:var(--sub);display:flex;align-items:center;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:color .2s}
 .subnav-item:hover{color:#1e293b}
