@@ -2282,23 +2282,24 @@ function setupTopbarButtons() {
     const title = document.getElementById('pageTitle').value || 'Página';
     const icon  = document.getElementById('iconBtn').textContent;
     const rawBody = document.getElementById('editor').innerHTML;
-    // Remove parágrafos/breaks vazios do final que causam página em branco
-    const body = rawBody.replace(/(\s*<p[^>]*>\s*(<br\s*\/?>)?\s*<\/p>\s*)+$/gi, '').replace(/(\s*<br\s*\/?>)+\s*$/gi, '').trim();
 
-    const html = `<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8"/>
-  <title>${title} — Manual CompraGil</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-  <style>
-    @page { size: A4; margin: 0 }
+    // Remove nós vazios do final via DOM (mais preciso que regex)
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = rawBody;
+    let last = tempDiv.lastChild;
+    while (last) {
+      const isEmpty =
+        (last.nodeType === 3 && !last.textContent.trim()) ||
+        (last.nodeType === 1 && !last.textContent.trim() && !last.querySelector('img,table,video,iframe'));
+      if (isEmpty) { const prev = last.previousSibling; last.remove(); last = prev; }
+      else break;
+    }
+    const body = tempDiv.innerHTML;
+
+    const css = `
+    @page { size: A4; margin: 1.5cm 2cm }
     *{margin:0;padding:0;box-sizing:border-box}
-    html{height:fit-content!important}
-    body{font-family:Inter,Arial,sans-serif;font-size:12px;line-height:1.75;color:#334155;-webkit-print-color-adjust:exact;print-color-adjust:exact;width:210mm;margin:0 auto;height:fit-content!important}
-
-    /* ── Wrapper interno ── */
-    #pdf-root{padding:1.8cm 2cm 1.2cm}
+    body{font-family:Inter,Arial,sans-serif;font-size:12px;line-height:1.75;color:#334155;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 
     /* ── Título da página ── */
     .page-title{font-size:22px;font-weight:700;color:#0f172a;margin-bottom:6px;line-height:1.3}
@@ -2317,35 +2318,45 @@ function setupTopbarButtons() {
     img{max-width:100%;border-radius:6px;display:block;margin:10px 0}
 
     /* ── Tabelas ── */
-    table{border-collapse:collapse;width:100%;margin:12px 0;border-radius:8px;overflow:hidden}
+    table{border-collapse:collapse;width:100%;margin:12px 0}
     th{background:#2d3561;color:#fff;font-size:11px;font-weight:700;padding:9px 12px;text-align:left;letter-spacing:.05em;text-transform:uppercase}
     td{border:1px solid #e2e8f0;padding:8px 12px;font-size:12px;vertical-align:top}
     tr:nth-child(even) td{background:#f8fafc}
-    tr:last-child td{border-bottom:none}
 
     /* ── Impressão ── */
     @media print{
-      html,body{height:fit-content!important}
       pre,blockquote,table,img{page-break-inside:avoid}
       h1,h2,h3{page-break-after:avoid}
       p,li{orphans:3;widows:3}
-      table{border:1px solid #e2e8f0}
-    }
-  </style>
+    }`;
+
+    const html = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <title>${title} — Manual CompraGil</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>${css}</style>
 </head>
 <body>
-  <div id="pdf-root">
-    <div class="page-title">${icon} ${title}</div>
-    <hr class="title-sep"/>
-    ${body}
-  </div>
-  <script>window.onload=function(){setTimeout(function(){window.print();},800)};<\/script>
+  <div class="page-title">${icon} ${title}</div>
+  <hr class="title-sep"/>
+  ${body}
 </body>
 </html>`;
-    const blob = new Blob([html], { type: 'text/html' });
-    const url  = URL.createObjectURL(blob);
-    window.open(url, '_blank');
-    setTimeout(() => URL.revokeObjectURL(url), 30000);
+
+    // Imprime via iframe oculto — evita que o Chrome expanda a janela ao tamanho
+    // da viewport do blob URL, o que gerava uma segunda página em branco.
+    const iframe = document.createElement('iframe');
+    iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:210mm;height:297mm;border:0;visibility:hidden';
+    document.body.appendChild(iframe);
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+    doc.open(); doc.write(html); doc.close();
+    setTimeout(() => {
+      iframe.contentWindow.focus();
+      iframe.contentWindow.print();
+      setTimeout(() => iframe.remove(), 4000);
+    }, 1200);
   });
 
   document.getElementById('clearBtn').addEventListener('click', () => {
