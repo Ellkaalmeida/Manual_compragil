@@ -1719,10 +1719,12 @@ function renderClientsPanel() {
         const ci  = parseInt(btn.dataset.ci);
         const cls = loadClients();
         const label = cls[ci].unit || cls[ci].client || 'este registro';
-        if (!confirm(`Remover "${label}"?`)) return;
-        cls.splice(ci, 1);
-        saveClients(cls);
-        renderClientsPanel();
+        showConfirm({
+          title: 'Remover registro',
+          message: `Deseja remover <strong>"${label}"</strong>?`,
+          confirmLabel: 'Remover',
+          onConfirm: () => { cls.splice(ci, 1); saveClients(cls); renderClientsPanel(); }
+        });
       });
     });
   }
@@ -1873,30 +1875,11 @@ function setupImageInteraction() {
   document.getElementById('_itDelete').addEventListener('click', () => {
     if (!selectedImg) return;
     const imgToRemove = selectedImg;
-    const overlay = document.createElement('div');
-    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:99999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px)';
-    overlay.innerHTML = `
-      <div style="background:#fff;border-radius:14px;width:340px;max-width:92vw;box-shadow:0 20px 50px rgba(0,0,0,.3);overflow:hidden;font-family:Inter,sans-serif">
-        <div style="background:#2d3561;padding:14px 18px;display:flex;align-items:center;gap:10px">
-          <div style="width:32px;height:32px;background:#fff;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2d3561" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-          </div>
-          <span style="color:#fff;font-size:13px;font-weight:700">Remover imagem</span>
-        </div>
-        <div style="padding:20px 18px 8px;color:#475569;font-size:13px">Deseja remover esta imagem do conteúdo?</div>
-        <div style="padding:12px 18px 16px;display:flex;gap:8px;justify-content:flex-end">
-          <button id="_imgDelCancel" style="border:1.5px solid #e2e8f0;background:#fff;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:600;color:#64748b;cursor:pointer">Cancelar</button>
-          <button id="_imgDelConfirm" style="background:#f43f5e;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer">Remover</button>
-        </div>
-      </div>`;
-    document.body.appendChild(overlay);
-    document.getElementById('_imgDelCancel').addEventListener('click', () => overlay.remove());
-    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
-    document.getElementById('_imgDelConfirm').addEventListener('click', () => {
-      overlay.remove();
-      imgToRemove.remove();
-      hideToolbar();
-      savePage();
+    showConfirm({
+      title: 'Remover imagem',
+      message: 'Deseja remover esta imagem do conteúdo?',
+      confirmLabel: 'Remover',
+      onConfirm: () => { imgToRemove.remove(); hideToolbar(); savePage(); }
     });
   });
 
@@ -1995,7 +1978,7 @@ function setupTableInteraction() {
     if (!activeCell) return;
     const row = activeCell.closest('tr');
     if (activeTable.rows.length <= 1) {
-      if (confirm('Remover a tabela inteira?')) { activeTable.remove(); hideToolbar(); savePage(); }
+      showConfirm({ title: 'Remover tabela', message: 'Deseja remover a tabela inteira?', confirmLabel: 'Remover', onConfirm: () => { activeTable.remove(); hideToolbar(); savePage(); } });
       return;
     }
     row.remove(); activeCell = null; savePage();
@@ -2005,7 +1988,7 @@ function setupTableInteraction() {
     if (!activeCell || !activeTable) return;
     const idx = activeCell.cellIndex;
     if (activeTable.rows[0]?.cells.length <= 1) {
-      if (confirm('Remover a tabela inteira?')) { activeTable.remove(); hideToolbar(); savePage(); }
+      showConfirm({ title: 'Remover tabela', message: 'Deseja remover a tabela inteira?', confirmLabel: 'Remover', onConfirm: () => { activeTable.remove(); hideToolbar(); savePage(); } });
       return;
     }
     Array.from(activeTable.rows).forEach(row => { if (row.cells[idx]) row.deleteCell(idx); });
@@ -2014,7 +1997,7 @@ function setupTableInteraction() {
 
   document.getElementById('_tblDelete').addEventListener('click', () => {
     if (!activeTable) return;
-    if (confirm('Remover esta tabela?')) { activeTable.remove(); hideToolbar(); savePage(); }
+    showConfirm({ title: 'Remover tabela', message: 'Deseja remover esta tabela?', confirmLabel: 'Remover', onConfirm: () => { activeTable.remove(); hideToolbar(); savePage(); } });
   });
 
   document.addEventListener('mousedown', e => {
@@ -2185,13 +2168,20 @@ function renderUserList() {
   container.querySelectorAll('.del-user-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const name = btn.dataset.name;
-      if (!confirm(`Remover "${name}" da whitelist?`)) return;
-      delete currentWhitelist[name];
-      delete localWhitelist[name];
-      saveLocalWhitelist();
-      wsSend({ type: 'manage_users', action: 'delete', userName: name });
-      adminFeedback(`${name} removido`);
-      renderUserList();
+      showConfirm({
+        title: 'Remover usuário',
+        message: `Deseja remover <strong>"${name}"</strong> da whitelist?`,
+        confirmLabel: 'Remover',
+        svgIcon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2d3561" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+        onConfirm: () => {
+          delete currentWhitelist[name];
+          delete localWhitelist[name];
+          saveLocalWhitelist();
+          wsSend({ type: 'manage_users', action: 'delete', userName: name });
+          adminFeedback(`${name} removido`);
+          renderUserList();
+        }
+      });
     });
   });
 }
@@ -2217,6 +2207,30 @@ function adminFeedback(text, isError = false) {
   el.style.color  = isError ? '#f43f5e' : '#10b981';
   el.style.opacity = '1';
   setTimeout(() => { el.style.opacity = '0'; }, 3000);
+}
+
+// ─── Modal de confirmação padrão ───────────────────────────────────────────
+function showConfirm({ title, message, svgIcon, confirmLabel = 'Confirmar', confirmColor = '#f43f5e', onConfirm }) {
+  const _SVG_TRASH = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2d3561" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>`;
+  const icon = svgIcon || _SVG_TRASH;
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:99999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px)';
+  overlay.innerHTML = `
+    <div style="background:#fff;border-radius:14px;width:340px;max-width:92vw;box-shadow:0 20px 50px rgba(0,0,0,.3);overflow:hidden;font-family:Inter,sans-serif">
+      <div style="background:#2d3561;padding:14px 18px;display:flex;align-items:center;gap:10px">
+        <div style="width:32px;height:32px;background:#fff;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${icon}</div>
+        <span style="color:#fff;font-size:13px;font-weight:700">${title}</span>
+      </div>
+      <div style="padding:20px 18px 8px;color:#475569;font-size:13px">${message}</div>
+      <div style="padding:12px 18px 16px;display:flex;gap:8px;justify-content:flex-end">
+        <button id="_cfCancel" style="border:1.5px solid #e2e8f0;background:#fff;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:600;color:#64748b;cursor:pointer">Cancelar</button>
+        <button id="_cfConfirm" style="background:${confirmColor};color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer">${confirmLabel}</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  document.getElementById('_cfCancel').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  document.getElementById('_cfConfirm').addEventListener('click', () => { overlay.remove(); onConfirm(); });
 }
 
 // ─── Botões topbar ─────────────────────────────────────────────────────────
@@ -2297,12 +2311,18 @@ function setupTopbarButtons() {
   });
 
   document.getElementById('clearBtn').addEventListener('click', () => {
-    if (confirm('Limpar esta página para todos os usuários?')) {
-      document.getElementById('editor').innerHTML = '';
-      document.getElementById('pageTitle').value = '';
-      document.getElementById('iconBtn').textContent = navItems[activeIdx]?.icon || '📄';
-      updateCounts();
-      savePage();
-    }
+    showConfirm({
+      title: 'Limpar página',
+      message: 'Deseja limpar esta página para <strong>todos os usuários</strong>?',
+      confirmLabel: 'Limpar',
+      svgIcon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2d3561" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>`,
+      onConfirm: () => {
+        document.getElementById('editor').innerHTML = '';
+        document.getElementById('pageTitle').value = '';
+        document.getElementById('iconBtn').textContent = navItems[activeIdx]?.icon || '📄';
+        updateCounts();
+        savePage();
+      }
+    });
   });
 }
