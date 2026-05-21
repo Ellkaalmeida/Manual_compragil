@@ -100,10 +100,9 @@ html,body,#app{height:100%;overflow:hidden}
 .sidebar.collapsed{width:56px;min-width:56px}
 .s-logo{padding:16px 14px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px;min-height:70px}
 .sidebar.collapsed .s-logo{padding:16px 0 16px 9px}
-.toggle-btn{width:var(--sidebar-w);min-width:var(--sidebar-w);background:transparent;border:none;border-right:1px solid rgba(255,255,255,.1);color:var(--sidebar-txt);cursor:pointer;height:100%;display:flex;align-items:center;justify-content:center;transition:width .3s,min-width .3s,background .2s;flex-shrink:0}
+.toggle-btn{width:56px;min-width:56px;background:transparent;border:none;border-right:1px solid rgba(255,255,255,.1);color:var(--sidebar-txt);cursor:pointer;height:100%;display:flex;align-items:center;justify-content:center;transition:background .2s;flex-shrink:0}
 .toggle-btn:hover{background:rgba(255,255,255,.1)}
 .toggle-btn svg{width:16px;height:16px;transition:transform .3s}
-.sidebar.collapsed~.main .toggle-btn{width:56px;min-width:56px}
 .sidebar.collapsed~.main .toggle-btn svg{transform:rotate(180deg)}
 .logo-icon{width:38px;height:38px;min-width:38px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:var(--sidebar-bg)}
 .logo-text{overflow:hidden;white-space:nowrap;transition:opacity .2s}
