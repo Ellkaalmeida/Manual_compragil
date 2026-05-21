@@ -293,8 +293,6 @@ html,body,#app{height:100%;overflow:hidden}
 .clients-header-icon{display:none}
 .clients-header-text{flex:1}
 .clients-title{font-size:20px;font-weight:700;color:#0f172a;letter-spacing:-.3px}
-.clients-import-btn{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;color:#334155;cursor:pointer;transition:all .15s;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
-.clients-import-btn:hover{border-color:#6366f1;color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.08)}
 .clients-form{display:flex;gap:14px;margin-bottom:16px;background:#fff;border-radius:14px;padding:20px 24px;flex-wrap:wrap;align-items:flex-end;box-shadow:0 1px 4px rgba(0,0,0,.06)}
 .clients-form-field{display:flex;flex-direction:column;gap:6px;flex:1;min-width:140px}
 .clients-form-field label{font-size:10.5px;font-weight:600;letter-spacing:.05em;color:#94a3b8;text-transform:uppercase}
@@ -1704,7 +1702,6 @@ function renderClientsPanel() {
     </div>` : ''}
     <div class="clients-toolbar">
       <input class="clients-filter" id="_clientFilter" type="text" placeholder="Filtrar por cliente, unidade, banco ou status...">
-      ${canEdit ? `<button class="clients-import-btn" id="_importDefaultBtn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Importar padrão</button>` : ''}
       <button class="clients-copy-all-btn" id="_copyActiveBanksBtn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copiar bancos ativos</button>
     </div>
     <div class="clients-table-wrap">
@@ -1726,21 +1723,6 @@ function renderClientsPanel() {
     </div>`;
 
   if (canEdit) {
-    panel.querySelector('#_importDefaultBtn')?.addEventListener('click', () => {
-      const cls = loadClients();
-      const defaultByBank = {};
-      DEFAULT_CLIENTS.forEach(d => { defaultByBank[d.bank.toLowerCase()] = d; });
-      // Atualiza status dos registros existentes que batem com o padrão
-      cls.forEach(c => {
-        const def = defaultByBank[(c.bank || '').toLowerCase()];
-        if (def && !c.status) c.status = def.status;
-      });
-      // Adiciona os que ainda não existem
-      const existingBanks = new Set(cls.map(c => (c.bank || '').toLowerCase()));
-      const toAdd = DEFAULT_CLIENTS.filter(d => !existingBanks.has(d.bank.toLowerCase()));
-      saveClients([...cls, ...toAdd]);
-      renderClientsPanel();
-    });
 
     panel.querySelector('#_clientAddBtn')?.addEventListener('click', () => {
       const unit   = document.getElementById('_fUnit').value.trim();
