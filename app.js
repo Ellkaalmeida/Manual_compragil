@@ -223,21 +223,23 @@ html,body,#app{height:100%;overflow:hidden}
 .notes-section-label svg{width:14px;height:14px;color:#6366f1;flex-shrink:0}
 .notes-textarea{width:100%;min-height:150px;border:1.5px solid #e2e8f0;border-radius:8px;padding:11px 13px;font-size:13px;line-height:1.7;color:#334155;background:#f8fafc;resize:vertical;font-family:Inter,sans-serif;box-sizing:border-box;transition:border .2s,background .2s}
 .notes-textarea:focus{outline:none;border-color:#6366f1;background:#fff;box-shadow:0 0 0 3px rgba(99,102,241,.1)}
-.notes-link-list{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
-.notes-link-item{display:flex;align-items:center;gap:8px}
-.notes-link-anchor{flex:1;display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid #e2e8f0;border-radius:9px;background:#f8fafc;text-decoration:none;color:#334155;font-size:12px;transition:background .15s,border .15s;overflow:hidden}
-.notes-link-anchor:hover{background:#eef2ff;border-color:#c7d2fe}
-.notes-link-anchor .nl-icon{flex-shrink:0;color:#6366f1}
-.notes-link-info{overflow:hidden}
-.notes-link-name{font-weight:600;margin:0;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#1e293b}
-.notes-link-url{font-size:10px;color:#94a3b8;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.notes-link-del{background:none;border:none;cursor:pointer;color:#cbd5e1;padding:5px;border-radius:6px;flex-shrink:0;transition:background .15s,color .15s;display:flex;align-items:center}
+.notes-link-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.notes-link-item{display:flex;align-items:stretch;border:1.5px solid #e2e8f0;border-radius:10px;background:#fff;overflow:hidden;transition:border-color .15s,box-shadow .15s}
+.notes-link-item:hover{border-color:#c7d2fe;box-shadow:0 2px 8px rgba(99,102,241,.1)}
+.notes-link-anchor{flex:1;display:flex;align-items:center;gap:10px;padding:10px 13px;text-decoration:none;color:#334155;overflow:hidden}
+.notes-link-anchor .nl-icon{flex-shrink:0;color:#6366f1;display:flex}
+.notes-link-info{overflow:hidden;min-width:0}
+.notes-link-name{font-weight:600;margin:0;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#1e293b}
+.notes-link-url{font-size:10.5px;color:#94a3b8;margin:2px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.notes-link-del{border:none;border-left:1.5px solid #f1f5f9;background:none;cursor:pointer;color:#cbd5e1;padding:0 13px;display:flex;align-items:center;flex-shrink:0;transition:background .15s,color .15s}
 .notes-link-del:hover{background:#fee2e2;color:#f43f5e}
-.notes-empty{font-size:12px;color:#94a3b8;text-align:center;padding:10px 0 6px;font-style:italic}
-.notes-add-row{display:flex;flex-direction:column;gap:7px}
-.notes-add-row input{width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#334155;background:#f8fafc;font-family:Inter,sans-serif;transition:border .2s,background .2s;box-sizing:border-box}
-.notes-add-row input:focus{outline:none;border-color:#6366f1;background:#fff;box-shadow:0 0 0 3px rgba(99,102,241,.1)}
-.notes-btn-add{width:100%;padding:9px;background:#2d3561;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.notes-empty{font-size:12px;color:#94a3b8;text-align:center;padding:8px 0;font-style:italic;margin:0}
+.notes-add-row{display:flex;flex-direction:column;gap:8px}
+.notes-input-wrap{position:relative;display:flex;align-items:center}
+.notes-input-wrap svg{position:absolute;left:11px;color:#94a3b8;flex-shrink:0;pointer-events:none}
+.notes-input-wrap input{width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px 9px 34px;font-size:13px;color:#334155;background:#f8fafc;font-family:Inter,sans-serif;transition:border .2s,background .2s;box-sizing:border-box}
+.notes-input-wrap input:focus{outline:none;border-color:#6366f1;background:#fff;box-shadow:0 0 0 3px rgba(99,102,241,.1)}
+.notes-btn-add{width:100%;padding:10px;background:#2d3561;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:2px}
 .notes-btn-add:hover{background:#6366f1}
 .notes-footer{padding:14px 20px;background:#fff;border-top:1px solid #e8edf4;flex-shrink:0}
 .notes-btn-save{width:100%;padding:11px;background:#2d3561;color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:7px}
@@ -511,8 +513,14 @@ document.getElementById('app').innerHTML = `
       </p>
       <div class="notes-link-list" id="notesLinkList"></div>
       <div class="notes-add-row">
-        <input type="text" id="notesLinkLabel" placeholder="Nome do link" />
-        <input type="text" id="notesLinkUrl" placeholder="https://..." />
+        <div class="notes-input-wrap">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <input type="text" id="notesLinkLabel" placeholder="Nome do link" />
+        </div>
+        <div class="notes-input-wrap">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          <input type="text" id="notesLinkUrl" placeholder="https://..." />
+        </div>
         <button class="notes-btn-add" id="notesAddLinkBtn">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Adicionar link
