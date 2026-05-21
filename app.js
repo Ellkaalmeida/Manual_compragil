@@ -1665,12 +1665,6 @@ function renderClientsPanel() {
   const panel = document.getElementById('clientsPanel');
 
   panel.innerHTML = `
-    <div class="clients-header">
-      <div class="clients-header-icon">👥</div>
-      <div class="clients-header-text">
-        <div class="clients-title">Clientes</div>
-      </div>
-    </div>
     ${canEdit ? `
     <div class="clients-form">
       <div class="clients-form-field">
