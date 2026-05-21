@@ -1878,7 +1878,9 @@ function setupImageInteraction() {
     overlay.innerHTML = `
       <div style="background:#fff;border-radius:14px;width:340px;max-width:92vw;box-shadow:0 20px 50px rgba(0,0,0,.3);overflow:hidden;font-family:Inter,sans-serif">
         <div style="background:#2d3561;padding:14px 18px;display:flex;align-items:center;gap:10px">
-          <span style="font-size:18px">🗑</span>
+          <div style="width:32px;height:32px;background:#fff;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2d3561" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </div>
           <span style="color:#fff;font-size:13px;font-weight:700">Remover imagem</span>
         </div>
         <div style="padding:20px 18px 8px;color:#475569;font-size:13px">Deseja remover esta imagem do conteúdo?</div>
