@@ -134,19 +134,21 @@ html,body,#app{height:100%;overflow:hidden}
 .topbar{background:var(--sidebar-bg);display:flex;align-items:center;padding:0 20px 0 0;height:var(--top);flex-shrink:0}
 .topbar-title{color:#fff;font-size:14px;font-weight:600;padding:0 16px;margin-right:12px;white-space:nowrap}
 .topbar-user{color:var(--sidebar-txt);font-size:12px;margin-right:auto;white-space:nowrap}
-.topbar-btns-area{display:flex;align-items:center;gap:5px;margin-right:12px}
-.topbar-collapse-btn{background:transparent;border:none;color:rgba(255,255,255,.4);width:18px;height:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:4px;transition:color .15s,background .15s;flex-shrink:0;padding:0}
-.topbar-collapse-btn:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.08)}
+.topbar-btns-area{display:flex;align-items:center;gap:4px;margin-right:12px}
+.topbar-collapse-btn{background:transparent;border:none;color:rgba(255,255,255,.35);width:16px;height:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:4px;transition:color .15s,background .15s;flex-shrink:0;padding:0}
+.topbar-collapse-btn:hover{color:rgba(255,255,255,.8);background:rgba(255,255,255,.08)}
 .topbar-collapse-btn svg{transition:transform .3s ease}
 .topbar-collapse-btn.collapsed svg{transform:rotate(180deg)}
-.topbar-btns{display:flex;align-items:center;gap:3px;overflow:hidden;max-width:500px;transition:max-width .3s ease,opacity .25s ease;opacity:1}
+.topbar-btns{display:flex;align-items:center;gap:4px;overflow:hidden;max-width:600px;transition:max-width .3s ease,opacity .25s ease;opacity:1}
 .topbar-btns.collapsed{max-width:0;opacity:0;pointer-events:none}
-.tb-action{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.72);width:32px;height:32px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,border-color .15s,color .15s;flex-shrink:0}
+.tb-action{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.75);height:30px;padding:0 10px;border-radius:7px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s,border-color .15s,color .15s;flex-shrink:0;white-space:nowrap}
 .tb-action:hover{background:rgba(99,102,241,.25);border-color:rgba(99,102,241,.4);color:#fff}
-.tb-action svg{width:15px;height:15px;flex-shrink:0}
-.tb-action.tb-save{color:#a5b4fc;background:rgba(99,102,241,.15);border-color:rgba(99,102,241,.25)}
-.tb-action.tb-save:hover{background:rgba(99,102,241,.35);color:#fff;border-color:rgba(99,102,241,.5)}
-.topbar-vsep{width:1px;height:20px;background:rgba(255,255,255,.12);flex-shrink:0;margin:0 2px}
+.tb-action svg{width:14px;height:14px;flex-shrink:0;opacity:.85}
+.tb-action:hover svg{opacity:1}
+.tb-action .btn-label{font-size:12px;font-weight:500}
+.tb-action.tb-save{color:#a5b4fc;background:rgba(99,102,241,.2);border-color:rgba(99,102,241,.35)}
+.tb-action.tb-save:hover{background:rgba(99,102,241,.4);color:#fff;border-color:rgba(99,102,241,.55)}
+.topbar-vsep{width:1px;height:18px;background:rgba(255,255,255,.15);flex-shrink:0;margin:0 1px}
 .subnav{background:#fff;display:flex;align-items:center;flex-wrap:wrap;min-height:var(--sub);border-bottom:1px solid #e2e8f0;flex-shrink:0;overflow:visible}
 .subnav-item{font-size:12.5px;color:#64748b;padding:0 12px;height:var(--sub);display:flex;align-items:center;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:color .2s}
 .subnav-item:hover{color:#1e293b}
@@ -395,16 +397,16 @@ document.getElementById('app').innerHTML = `
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
         <div class="topbar-btns" id="topbarBtns">
-          <button class="tb-action" id="searchBtn" title="Buscar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
-          <button class="tb-action" id="previewBtn" title="Visualizar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-          <button class="tb-action" id="exportBtn" title="Exportar PDF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg></button>
+          <button class="tb-action" id="searchBtn" title="Buscar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span class="btn-label">Buscar</span></button>
+          <button class="tb-action" id="previewBtn" title="Visualizar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><span class="btn-label">Visualizar</span></button>
+          <button class="tb-action" id="exportBtn" title="Exportar PDF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg><span class="btn-label">PDF</span></button>
           <div class="topbar-vsep" id="editSep" style="display:none"></div>
-          <button class="tb-action" id="clearBtn" style="display:none" title="Limpar página"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button>
-          <button class="tb-action tb-save" id="saveBtn" style="display:none" title="Salvar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button>
+          <button class="tb-action" id="clearBtn" style="display:none" title="Limpar página"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg><span class="btn-label">Limpar</span></button>
+          <button class="tb-action tb-save" id="saveBtn" style="display:none" title="Salvar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg><span class="btn-label">Salvar</span></button>
           <div class="topbar-vsep" id="adminSep" style="display:none"></div>
-          <button class="tb-action" id="adminBtn" style="display:none" title="Admin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></button>
+          <button class="tb-action" id="adminBtn" style="display:none" title="Admin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span class="btn-label">Admin</span></button>
           <div class="topbar-vsep"></div>
-          <button class="tb-action" id="logoutBtn" title="Sair"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
+          <button class="tb-action" id="logoutBtn" title="Sair"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span class="btn-label">Sair</span></button>
         </div>
       </div>
     </div>
