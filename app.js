@@ -98,7 +98,11 @@ html,body,#app{height:100%;overflow:hidden}
 .layout{display:flex;height:100vh;background:#f0f4f8}
 .sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:var(--sidebar-bg);display:flex;flex-direction:column;transition:.3s;overflow:hidden}
 .sidebar.collapsed{width:56px;min-width:56px}
-.s-logo{padding:16px 14px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px;min-height:70px}
+.s-logo{padding:16px 14px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px;min-height:70px;position:relative}
+.s-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.1);border:none;color:#c7d2fe;width:26px;height:26px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;flex-shrink:0}
+.s-toggle:hover{background:rgba(255,255,255,.22)}
+.s-toggle svg{width:14px;height:14px;transition:transform .3s}
+.sidebar.collapsed .s-toggle svg{transform:rotate(180deg)}
 .logo-icon{width:38px;height:38px;min-width:38px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:var(--sidebar-bg)}
 .logo-text{overflow:hidden;white-space:nowrap;transition:opacity .2s}
 .logo-text strong{display:block;font-size:13px;font-weight:700;color:#fff;letter-spacing:.5px}
@@ -127,8 +131,6 @@ html,body,#app{height:100%;overflow:hidden}
 .sidebar.collapsed .online-name{opacity:0;width:0}
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
 .topbar{background:var(--sidebar-bg);display:flex;align-items:center;padding:0 20px 0 0;height:var(--top);border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0}
-.toggle-btn{background:transparent;border:none;color:var(--sidebar-txt);font-size:20px;cursor:pointer;padding:0 16px;height:100%;border-right:1px solid rgba(255,255,255,.1);transition:background .2s;flex-shrink:0}
-.toggle-btn:hover{background:rgba(255,255,255,.1)}
 .topbar-title{color:#fff;font-size:14px;font-weight:600;padding:0 16px;border-right:1px solid rgba(255,255,255,.2);margin-right:12px;white-space:nowrap}
 .topbar-user{color:var(--sidebar-txt);font-size:12px;margin-right:auto;white-space:nowrap}
 .topbar-actions{display:flex;align-items:center;gap:1px;padding:0 4px;background:rgba(0,0,0,.15);border-radius:10px;margin-right:4px}
@@ -352,6 +354,9 @@ document.getElementById('app').innerHTML = `
     <div class="s-logo">
       <div class="logo-icon" id="logoIconBtn" title="Notas & Links do manual">C</div>
       <div class="logo-text"><strong>COMPRÁGIL</strong><small>Sistema de compras públicas</small></div>
+      <button class="s-toggle" id="toggleBtn" title="Recolher menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
     </div>
     <nav class="s-nav" id="sidebarNav"></nav>
     <div class="online-section">
@@ -362,7 +367,6 @@ document.getElementById('app').innerHTML = `
 
   <div class="main">
     <div class="topbar">
-      <button class="toggle-btn" id="toggleBtn">&#171;</button>
       <span class="topbar-title">Manual Compra ágil Web</span>
       <span id="roleBadge" style="display:none"></span>
       <span style="flex:1"></span>
@@ -1337,10 +1341,15 @@ function renderOnlineUsers(users) {
 
 // ─── Toggle sidebar ────────────────────────────────────────────────────────
 function setupToggle() {
-  document.getElementById('toggleBtn').addEventListener('click', () => {
-    const sb = document.getElementById('sidebar');
+  const sb  = document.getElementById('sidebar');
+  const btn = document.getElementById('toggleBtn');
+
+  // Restaura estado salvo
+  if (localStorage.getItem('sidebar_collapsed') === '1') sb.classList.add('collapsed');
+
+  btn.addEventListener('click', () => {
     sb.classList.toggle('collapsed');
-    document.getElementById('toggleBtn').innerHTML = sb.classList.contains('collapsed') ? '&#187;' : '&#171;';
+    localStorage.setItem('sidebar_collapsed', sb.classList.contains('collapsed') ? '1' : '0');
   });
 }
 
