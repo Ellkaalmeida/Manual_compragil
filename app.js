@@ -1822,14 +1822,12 @@ function showClientsPanel() {
   document.getElementById('clientsPanel').classList.add('visible');
   document.getElementById('editorScroll').style.display = 'none';
   document.getElementById('toolbar').style.display = 'none';
-  document.querySelector('.topbar-actions-wrap').style.visibility = 'hidden';
   renderClientsPanel();
 }
 
 function hideClientsPanel() {
   document.getElementById('clientsPanel').classList.remove('visible');
   document.getElementById('editorScroll').style.display = '';
-  document.querySelector('.topbar-actions-wrap').style.visibility = '';
 }
 
 // ─── Image resize interaction ──────────────────────────────────────────────
