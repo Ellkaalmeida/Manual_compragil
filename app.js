@@ -2294,9 +2294,8 @@ function setupTopbarButtons() {
   <style>
     @page { size: A4; margin: 0 }
     *{margin:0;padding:0;box-sizing:border-box}
-    html{height:auto!important;overflow:hidden}
-    body{height:auto!important}
-    body{font-family:Inter,Arial,sans-serif;font-size:12px;line-height:1.75;color:#334155;-webkit-print-color-adjust:exact;print-color-adjust:exact;padding:1.8cm 2cm 2cm}
+    html,body{height:auto!important;min-height:0!important}
+    body{font-family:Inter,Arial,sans-serif;font-size:12px;line-height:1.75;color:#334155;-webkit-print-color-adjust:exact;print-color-adjust:exact;padding:1.8cm 2cm 1.2cm}
 
     /* ── Título da página ── */
     .page-title{font-size:22px;font-weight:700;color:#0f172a;margin-bottom:6px;line-height:1.3}
@@ -2323,7 +2322,8 @@ function setupTopbarButtons() {
 
     /* ── Impressão ── */
     @media print{
-      .doc-header{page-break-inside:avoid}
+      html,body{height:auto!important;min-height:0!important}
+      body{padding-bottom:0!important}
       pre,blockquote,table,img{page-break-inside:avoid}
       h1,h2,h3{page-break-after:avoid}
       p,li{orphans:3;widows:3}
