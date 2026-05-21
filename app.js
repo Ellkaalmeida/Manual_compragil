@@ -2282,47 +2282,76 @@ function setupTopbarButtons() {
     const title = document.getElementById('pageTitle').value || 'Página';
     const icon  = document.getElementById('iconBtn').textContent;
     const body  = document.getElementById('editor').innerHTML;
+    const dateStr = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
 
     const html = `<!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8"/>
-  <title>${title}</title>
+  <title>${title} — Manual CompraGil</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
+    @page { size: A4; margin: 1.8cm 2cm 2cm; }
     *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:Inter,Arial,sans-serif;font-size:13px;line-height:1.7;color:#334155;padding:40px 56px;max-width:100%}
-    h1.page-title{font-size:24px;font-weight:700;color:#0f172a;margin-bottom:12px}
-    hr.title-sep{border:none;border-top:1px solid #e2e8f0;margin-bottom:20px}
-    h1{font-size:20px;font-weight:700;color:#0f172a;margin:20px 0 8px}
-    h2{font-size:16px;font-weight:600;color:#1e293b;margin:16px 0 6px}
-    h3{font-size:14px;font-weight:600;color:#334155;margin:12px 0 4px}
-    p{margin:0 0 6px}
+    body{font-family:Inter,Arial,sans-serif;font-size:12px;line-height:1.75;color:#334155;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+    /* ── Cabeçalho do documento ── */
+    .doc-header{display:flex;align-items:center;justify-content:space-between;padding-bottom:14px;border-bottom:3px solid #2d3561;margin-bottom:28px}
+    .doc-brand{display:flex;align-items:center;gap:10px}
+    .doc-logo{width:36px;height:36px;background:#2d3561;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px;flex-shrink:0}
+    .doc-brand-name{font-size:13px;font-weight:700;color:#2d3561;letter-spacing:.02em}
+    .doc-brand-sub{font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;margin-top:1px}
+    .doc-date{font-size:10px;color:#94a3b8;text-align:right;line-height:1.5}
+
+    /* ── Título da página ── */
+    .page-title{font-size:22px;font-weight:700;color:#0f172a;margin-bottom:6px;line-height:1.3}
+    .title-sep{border:none;border-top:1px solid #e2e8f0;margin-bottom:22px}
+
+    /* ── Tipografia ── */
+    h1{font-size:17px;font-weight:700;color:#0f172a;margin:22px 0 8px}
+    h2{font-size:14px;font-weight:600;color:#1e293b;margin:18px 0 6px}
+    h3{font-size:13px;font-weight:600;color:#334155;margin:14px 0 4px}
+    p{margin:0 0 7px}
     ul,ol{padding-left:22px;margin:6px 0}
-    li{margin:2px 0}
-    blockquote{border-left:3px solid #c7d2fe;padding-left:14px;color:#64748b;margin:10px 0}
-    pre{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:12px 16px;font-size:12px;font-family:monospace;white-space:pre-wrap;word-break:break-all;margin:8px 0}
-    table{border-collapse:collapse;width:100%;margin:10px 0}
-    td,th{border:1px solid #e2e8f0;padding:6px 10px;font-size:12px;text-align:left}
-    th{background:#f8fafc;font-weight:600}
-    img{max-width:100%;border-radius:6px;display:block;margin:8px 0}
-    a{color:#6366f1}
+    li{margin:3px 0}
+    blockquote{border-left:3px solid #6366f1;padding:8px 14px;color:#64748b;margin:12px 0;background:#f8faff;border-radius:0 6px 6px 0}
+    pre{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:12px 16px;font-size:11px;font-family:monospace;white-space:pre-wrap;word-break:break-all;margin:10px 0}
+    a{color:#2d3561;text-decoration:none}
+    img{max-width:100%;border-radius:6px;display:block;margin:10px 0}
+
+    /* ── Tabelas ── */
+    table{border-collapse:collapse;width:100%;margin:12px 0;border-radius:8px;overflow:hidden}
+    th{background:#2d3561;color:#fff;font-size:11px;font-weight:700;padding:9px 12px;text-align:left;letter-spacing:.05em;text-transform:uppercase}
+    td{border:1px solid #e2e8f0;padding:8px 12px;font-size:12px;vertical-align:top}
+    tr:nth-child(even) td{background:#f8fafc}
+    tr:last-child td{border-bottom:none}
+
+    /* ── Impressão ── */
     @media print{
-      body{padding:0;font-size:12px}
-      h1.page-title{font-size:20px}
-      h1{font-size:17px} h2{font-size:14px} h3{font-size:13px}
-      a{color:#6366f1;text-decoration:none}
-      pre,blockquote,table,img,tr{page-break-inside:avoid}
+      .doc-header{page-break-inside:avoid}
+      pre,blockquote,table,img{page-break-inside:avoid}
       h1,h2,h3{page-break-after:avoid}
       p,li{orphans:3;widows:3}
+      table{border:1px solid #e2e8f0}
     }
   </style>
 </head>
 <body>
-  <h1 class="page-title">${icon} ${title}</h1>
+  <div class="doc-header">
+    <div class="doc-brand">
+      <div class="doc-logo">C</div>
+      <div>
+        <div class="doc-brand-name">COMPRÁGIL</div>
+        <div class="doc-brand-sub">Manual do Sistema</div>
+      </div>
+    </div>
+    <div class="doc-date">${dateStr}</div>
+  </div>
+
+  <div class="page-title">${icon} ${title}</div>
   <hr class="title-sep"/>
   ${body}
-  <script>window.onload=function(){setTimeout(function(){window.print();},600)};<\/script>
+  <script>window.onload=function(){setTimeout(function(){window.print();},800)};<\/script>
 </body>
 </html>`;
     const blob = new Blob([html], { type: 'text/html' });
