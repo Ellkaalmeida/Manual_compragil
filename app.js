@@ -2292,6 +2292,7 @@ function setupTopbarButtons() {
   <style>
     @page { size: A4; margin: 0 }
     *{margin:0;padding:0;box-sizing:border-box}
+    html,body{height:auto!important}
     body{font-family:Inter,Arial,sans-serif;font-size:12px;line-height:1.75;color:#334155;-webkit-print-color-adjust:exact;print-color-adjust:exact;padding:1.8cm 2cm 2cm}
 
     /* ── Título da página ── */
