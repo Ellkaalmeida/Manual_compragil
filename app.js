@@ -1204,8 +1204,12 @@ function initApp() {
 
   buildSidebarNav();
   buildSubnav();
-  activePageKey = 'sidebar-0';
-  document.getElementById('breadcrumb').textContent = navItems[0].label;
+  // Abre sempre na aba Introdução ao iniciar
+  activePageKey = 'subnav-0';
+  currentMode   = 'subnav';
+  document.getElementById('breadcrumb').textContent = subnavItems[0];
+  const subnavEls = document.querySelectorAll('.subnav-item');
+  if (subnavEls.length > 0) subnavEls[0].classList.add('active');
 
   // Mostra nome do usuário no topbar
   const topbarUser = document.getElementById('topbarUser');
