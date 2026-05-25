@@ -1537,35 +1537,11 @@ function setupToolbar() {
     sel.removeAllRanges();
     sel.addRange(_savedRange.cloneRange());
 
-    // Verifica se a seleção está dentro de <a name="..."> (heading do Word)
-    // onde o CSS sobrescreve cores — nesses casos usa span manual
-    let ancestor = _savedRange.commonAncestorContainer;
-    if (ancestor.nodeType === 3) ancestor = ancestor.parentNode;
-    const inNameAnchor = ancestor.closest && ancestor.closest('a:not([href])');
-
-    if (inNameAnchor) {
-      // Span manual para headings com âncora — garante que CSS não sobrescreve
-      const range = sel.getRangeAt(0);
-      const span  = document.createElement('span');
-      span.style.color = color;
-      try {
-        range.surroundContents(span);
-      } catch {
-        const frag = range.extractContents();
-        span.appendChild(frag);
-        range.insertNode(span);
-      }
-      const after = document.createRange();
-      after.setStartAfter(span);
-      after.collapse(true);
-      sel.removeAllRanges();
-      sel.addRange(after);
-    } else {
-      // execCommand com styleWithCSS — cria <span style="color"> e respeita
-      // formatações existentes (negrito, sublinhado, itálico, etc.)
-      document.execCommand('styleWithCSS', false, true);
-      document.execCommand('foreColor', false, color);
-    }
+    // styleWithCSS=true → gera <span style="color:..."> (não <font color>)
+    // Funciona com qualquer formatação (negrito, sublinhado, heading, etc.)
+    // CSS já corrigido: a:not([href]){color:inherit} — sem conflito
+    document.execCommand('styleWithCSS', false, true);
+    document.execCommand('foreColor', false, color);
 
     savePage();
   }
