@@ -1646,8 +1646,8 @@ function setupToolbar() {
           <div style="display:flex;gap:8px">
             <button id="_htmlCancel" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:7px 16px;font-size:12px;font-weight:600;color:#94a3b8;cursor:pointer">Cancelar</button>
             <button id="_htmlInsert" style="background:#6366f1;color:#fff;border:none;border-radius:7px;padding:7px 18px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Inserir renderizado
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              Inserir código
             </button>
           </div>
         </div>
@@ -1695,12 +1695,28 @@ function setupToolbar() {
       const html = textarea.value.trim();
       if (!html) { overlay.remove(); return; }
 
-      // Cria fragmento DOM a partir do HTML
-      const temp = document.createElement('div');
-      temp.innerHTML = html;
-      const frag = document.createDocumentFragment();
-      let lastNode = null;
-      while (temp.firstChild) { lastNode = frag.appendChild(temp.firstChild); }
+      // Escapa o HTML e cria bloco de código estilo dark (igual ao modal)
+      const escaped = html
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+      const pre = document.createElement('pre');
+      pre.setAttribute('style', [
+        'background:#0f172a',
+        'color:#e2e8f0',
+        "font-family:'Fira Code','Cascadia Code','Consolas',monospace",
+        'font-size:13px',
+        'line-height:1.7',
+        'padding:16px 20px',
+        'border-radius:10px',
+        'margin:8px 0',
+        'overflow-x:auto',
+        'white-space:pre-wrap',
+        'word-break:break-all',
+        'border:1px solid rgba(255,255,255,.08)'
+      ].join(';'));
+      pre.innerHTML = escaped;
 
       editor.focus();
 
@@ -1710,18 +1726,16 @@ function setupToolbar() {
         sel.removeAllRanges();
         sel.addRange(_insertRange);
         _insertRange.deleteContents();
-        _insertRange.insertNode(frag);
-        // Move cursor para depois do conteúdo inserido
-        if (lastNode) {
-          const r = document.createRange();
-          r.setStartAfter(lastNode);
-          r.collapse(true);
-          sel.removeAllRanges();
-          sel.addRange(r);
-        }
+        _insertRange.insertNode(pre);
+        // Move cursor para depois do bloco inserido
+        const r = document.createRange();
+        r.setStartAfter(pre);
+        r.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(r);
       } else {
         // Sem cursor salvo — acrescenta ao final do editor
-        editor.appendChild(frag);
+        editor.appendChild(pre);
       }
 
       savePage();
