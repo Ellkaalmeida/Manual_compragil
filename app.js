@@ -165,6 +165,17 @@ html,body,#app{height:100%;overflow:hidden}
 .page-title-input::placeholder{color:#cbd5e1}
 .toolbar{position:fixed;background:#1e293b;border-radius:8px;padding:4px 6px;display:none;align-items:center;gap:2px;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.25)}
 .toolbar.visible{display:flex}
+.tb-color-wrap{position:relative}
+.tb-color-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 7px!important}
+.tb-color-bar{display:block;width:14px;height:3px;border-radius:2px;background:#ef4444;transition:background .15s}
+.tb-color-palette{position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#1e293b;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:10px;display:none;z-index:10001;box-shadow:0 8px 32px rgba(0,0,0,.4);width:170px}
+.tb-color-palette.open{display:block}
+.tb-color-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:8px}
+.tb-swatch{width:24px;height:24px;border-radius:5px;cursor:pointer;display:block;transition:transform .1s,box-shadow .1s}
+.tb-swatch:hover{transform:scale(1.2);box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.tb-color-custom-label{display:flex;align-items:center;gap:7px;cursor:pointer;border-top:1px solid rgba(255,255,255,.08);padding-top:8px;color:rgba(255,255,255,.6);font-size:11px}
+.tb-color-custom-label input[type=color]{width:24px;height:24px;border:none;border-radius:5px;padding:0;cursor:pointer;background:none}
+.tb-color-custom-label:hover{color:#fff}
 .tb-btn{background:none;border:none;cursor:pointer;padding:5px 7px;border-radius:5px;font-size:13px;color:#e2e8f0;font-weight:500;transition:background .15s;white-space:nowrap}
 .tb-btn:hover{background:rgba(255,255,255,.15);color:#fff}
 .tb-sep{width:1px;height:16px;background:rgba(255,255,255,.2);margin:0 2px;flex-shrink:0}
@@ -432,6 +443,37 @@ document.getElementById('app').innerHTML = `
           <button class="tb-btn" data-cmd="insertOrderedList">1. Num.</button>
           <button class="tb-btn" data-cmd="blockquote">❝ Citar</button>
           <button class="tb-btn" data-cmd="pre">&lt;&gt; Código</button>
+          <div class="tb-sep"></div>
+          <div class="tb-color-wrap" id="tbColorWrap">
+            <button class="tb-btn tb-color-btn" id="tbColorBtn" title="Cor do texto">
+              <span style="font-weight:700;font-size:13px;line-height:1">A</span>
+              <span class="tb-color-bar" id="tbColorBar"></span>
+            </button>
+            <div class="tb-color-palette" id="tbColorPalette">
+              <div class="tb-color-grid">
+                <span class="tb-swatch" data-color="#000000" style="background:#000000" title="Preto"></span>
+                <span class="tb-swatch" data-color="#374151" style="background:#374151" title="Cinza escuro"></span>
+                <span class="tb-swatch" data-color="#6b7280" style="background:#6b7280" title="Cinza"></span>
+                <span class="tb-swatch" data-color="#94a3b8" style="background:#94a3b8" title="Cinza claro"></span>
+                <span class="tb-swatch" data-color="#ffffff" style="background:#fff;border:1px solid #475569" title="Branco"></span>
+                <span class="tb-swatch" data-color="#ef4444" style="background:#ef4444" title="Vermelho"></span>
+                <span class="tb-swatch" data-color="#f97316" style="background:#f97316" title="Laranja"></span>
+                <span class="tb-swatch" data-color="#eab308" style="background:#eab308" title="Amarelo"></span>
+                <span class="tb-swatch" data-color="#22c55e" style="background:#22c55e" title="Verde"></span>
+                <span class="tb-swatch" data-color="#3b82f6" style="background:#3b82f6" title="Azul"></span>
+                <span class="tb-swatch" data-color="#6366f1" style="background:#6366f1" title="Índigo"></span>
+                <span class="tb-swatch" data-color="#8b5cf6" style="background:#8b5cf6" title="Roxo"></span>
+                <span class="tb-swatch" data-color="#ec4899" style="background:#ec4899" title="Rosa"></span>
+                <span class="tb-swatch" data-color="#14b8a6" style="background:#14b8a6" title="Teal"></span>
+                <span class="tb-swatch" data-color="#f43f5e" style="background:#f43f5e" title="Rosa forte"></span>
+                <span class="tb-swatch" data-color="#2d3561" style="background:#2d3561" title="Azul escuro"></span>
+              </div>
+              <label class="tb-color-custom-label" title="Cor personalizada">
+                <input type="color" id="tbColorCustom" value="#ef4444"/>
+                <span>Personalizado</span>
+              </label>
+            </div>
+          </div>
           <div class="tb-sep"></div>
           <button class="tb-btn" id="linkBtn">🔗 Link</button>
           <button class="tb-btn" id="tableBtn">⊞ Tabela</button>
@@ -1473,6 +1515,50 @@ function setupToolbar() {
       else document.execCommand(cmd, false, null);
       toolbar.classList.remove('visible');
     });
+  });
+
+  // ── Seletor de cor do texto ──────────────────────────────────────────────
+  let _savedRange = null;
+  const colorBar     = document.getElementById('tbColorBar');
+  const colorPalette = document.getElementById('tbColorPalette');
+  const colorCustom  = document.getElementById('tbColorCustom');
+
+  function applyColor(color) {
+    colorBar.style.background = color;
+    colorCustom.value = /^#[0-9a-f]{6}$/i.test(color) ? color : '#ef4444';
+    // Restaura seleção e aplica cor
+    if (_savedRange) {
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(_savedRange);
+    }
+    document.execCommand('foreColor', false, color);
+    colorPalette.classList.remove('open');
+  }
+
+  document.getElementById('tbColorBtn').addEventListener('mousedown', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Salva seleção antes do clique fechar
+    const sel = window.getSelection();
+    _savedRange = (sel && sel.rangeCount > 0) ? sel.getRangeAt(0).cloneRange() : null;
+    colorPalette.classList.toggle('open');
+  });
+
+  document.querySelectorAll('.tb-swatch').forEach(sw => {
+    sw.addEventListener('mousedown', e => { e.preventDefault(); applyColor(sw.dataset.color); });
+  });
+
+  colorCustom.addEventListener('input', e => { applyColor(e.target.value); });
+  colorCustom.addEventListener('mousedown', e => {
+    e.stopPropagation();
+    const sel = window.getSelection();
+    _savedRange = (sel && sel.rangeCount > 0) ? sel.getRangeAt(0).cloneRange() : null;
+  });
+
+  document.addEventListener('mousedown', e => {
+    const wrap = document.getElementById('tbColorWrap');
+    if (wrap && !wrap.contains(e.target)) colorPalette.classList.remove('open');
   });
 
   document.getElementById('linkBtn').addEventListener('click', () => {
