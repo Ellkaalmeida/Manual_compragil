@@ -480,13 +480,13 @@ document.getElementById('app').innerHTML = `
           <div class="tb-sep"></div>
           <button class="tb-btn" id="linkBtn">🔗 Link</button>
           <button class="tb-btn" id="tableBtn">⊞ Tabela</button>
-          <button class="tb-btn" id="imgUploadTrigger">🖼 Imagem</button>
+          <button class="tb-btn" id="imgUploadTrigger"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Imagem</button>
           <input type="file" id="imgFileInput" accept="image/*" class="img-upload-btn"/>
         </div>
 
         <!-- Image resize toolbar (shown on image click) -->
         <div class="img-resize-toolbar" id="imgResizeToolbar">
-          <span style="font-size:11px;color:#94a3b8;margin-right:2px">🖼</span>
+          <span style="color:#94a3b8;margin-right:2px;display:flex;align-items:center"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>
           <input type="range" id="_itRange" min="10" max="100" value="100"/>
           <span class="it-pct" id="_itPct">100%</span>
           <div class="tb-sep"></div>
@@ -539,7 +539,7 @@ document.getElementById('app').innerHTML = `
     </div>
   </div>
 </div>
-<div class="drop-overlay" id="dropOverlay"><div style="font-size:40px">🖼</div><div>Solte a imagem aqui</div></div>
+<div class="drop-overlay" id="dropOverlay"><div style="display:flex;justify-content:center;margin-bottom:8px"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div><div>Solte a imagem aqui</div></div>
 
 <div class="search-overlay" id="searchOverlay">
   <div class="search-modal">
@@ -1616,7 +1616,7 @@ function insertImage(file) {
     overlay.innerHTML = `
       <div style="background:#fff;border-radius:16px;width:440px;max-width:94vw;box-shadow:0 24px 60px rgba(0,0,0,.35);overflow:hidden;font-family:Inter,sans-serif">
         <div style="background:#2d3561;padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
-          <div style="color:#fff;font-size:14px;font-weight:700">🖼 Inserir imagem</div>
+          <div style="color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Inserir imagem</div>
           <button id="_imgClose" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:20px;cursor:pointer;padding:2px 6px;border-radius:6px;line-height:1">✕</button>
         </div>
         <div style="padding:20px">
