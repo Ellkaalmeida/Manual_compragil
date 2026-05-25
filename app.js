@@ -1558,17 +1558,40 @@ function insertImage(file) {
       b.addEventListener('click', () => { range.value = b.dataset.v; updatePreview(b.dataset.v); });
     });
 
-    function doInsert() {
+    async function doInsert() {
       const pct = range.value;
       const widthStyle = pct === '100' ? 'max-width:100%' : `width:${pct}%`;
+
+      // Mostra loading no botão
+      const insertBtn = document.getElementById('_imgInsert');
+      insertBtn.textContent = 'Enviando…';
+      insertBtn.disabled = true;
+
+      // Tenta fazer upload para o servidor (salva no GitHub com URL permanente)
+      let imgSrc = src; // fallback: base64
+      try {
+        const base64Data = src.split(',')[1]; // remove prefixo "data:image/...;base64,"
+        const resp = await fetch('/upload-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: base64Data, type: file.type, name: file.name })
+        });
+        if (resp.ok) {
+          const json = await resp.json();
+          if (json.url) imgSrc = json.url; // URL permanente no GitHub
+        }
+      } catch (e) {
+        console.warn('[insertImage] upload falhou, usando base64:', e.message);
+      }
+
       document.getElementById('editor').focus();
       document.execCommand('insertHTML', false,
-        `<img src="${src}" alt="${file.name}" style="${widthStyle};border-radius:8px;margin:8px 0;display:block"/>`);
+        `<img src="${imgSrc}" alt="${file.name}" style="${widthStyle};border-radius:8px;margin:8px 0;display:block"/>`);
       savePage();
       overlay.remove();
     }
 
-    document.getElementById('_imgInsert').addEventListener('click', doInsert);
+    document.getElementById('_imgInsert').addEventListener('click', () => doInsert());
     document.getElementById('_imgCancel').addEventListener('click', () => overlay.remove());
     document.getElementById('_imgClose').addEventListener('click',  () => overlay.remove());
     overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });

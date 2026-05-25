@@ -229,9 +229,50 @@ const MIME = {
 
 const server = http.createServer((req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
+
+  // ─── Upload de imagem → salva no GitHub como arquivo permanente ────────────
+  if (req.method === 'POST' && req.url === '/upload-image') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; if (body.length > 20 * 1024 * 1024) req.destroy(); });
+    req.on('end', async () => {
+      try {
+        const { data, type, name } = JSON.parse(body);
+        // data = base64 puro (sem prefixo data:...)
+        const ext  = (type || 'image/png').split('/')[1].replace('jpeg','jpg') || 'png';
+        const hash = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+        const ghPath = `data/images/${hash}.${ext}`;
+
+        if (!GH_TOKEN) {
+          res.writeHead(503, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({ error: 'GITHUB_TOKEN não configurado' }));
+        }
+
+        const ghRes = await ghRequest('PUT', `/repos/${GH_OWNER}/${GH_REPO}/contents/${ghPath}`, {
+          message: `upload: ${name || hash + '.' + ext}`,
+          content: data
+        });
+
+        if (ghRes.content && ghRes.content.name) {
+          const url = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/main/${ghPath}`;
+          console.log(`[upload] imagem salva: ${url}`);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ url }));
+        } else {
+          console.error('[upload] GitHub respondeu:', JSON.stringify(ghRes).substring(0, 200));
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Falha ao salvar no GitHub' }));
+        }
+      } catch (e) {
+        console.error('[upload-image] erro:', e.message);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: e.message }));
+      }
+    });
+    return;
+  }
 
   if (req.url === '/whitelist') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
