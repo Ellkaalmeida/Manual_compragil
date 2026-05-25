@@ -147,6 +147,52 @@ function savePages() {
 const pages = loadPages();
 const clients = new Set();
 
+// ─── Seed: injeta seções 2.4-2.6 no Dashboard se ainda não existirem ─────────
+function seedDashboardSections() {
+  const key = 'sidebar-0';
+  const p = pages[key];
+  if (!p || !p.content) return; // página ainda não existe — nada a fazer
+  if (p.content.includes('2.4') || p.content.includes('Vencimento dos Contratos')) return; // já tem
+
+  const extra = `
+<h2>2.4 Vencimento dos Contratos 2026</h2>
+<p>O gráfico de barras <strong>Vencimento dos Contratos 2026</strong> apresenta, mês a mês, a quantidade de contratos com vencimento previsto ao longo do ano. As barras são segmentadas por categoria, permitindo identificar quais tipos de contrato exigem mais atenção em cada período.</p>
+<p>As categorias exibidas são: <strong>Serviços</strong>, <strong>Transportes</strong>, <strong>Materiais</strong>, <strong>Aluguéis</strong>, <strong>Diárias</strong>, <strong>Pessoal</strong> e <strong>Outros</strong>.</p>
+<p>O mês de <strong>Abril/2026</strong> concentra o maior número de vencimentos — com <strong>54 contratos</strong> a renovar ou encerrar — exigindo planejamento antecipado da equipe de compras. Use esse gráfico para programar com antecedência os processos de renovação ou substituição contratual.</p>
+
+<h2>2.5 Resumo das Compras</h2>
+<p>A tabela <strong>Resumo das Compras</strong> consolida os pedidos realizados por cada Secretaria, possibilitando uma visão comparativa do volume e do valor investido por unidade gestora no período selecionado.</p>
+<table>
+  <thead><tr><th>Coluna</th><th>Descrição</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Secretaria</strong></td><td>Nome da unidade gestora responsável pelas compras</td></tr>
+    <tr><td><strong>Quantidade Pedido</strong></td><td>Número total de pedidos realizados no período</td></tr>
+    <tr><td><strong>Valor Total</strong></td><td>Soma dos valores dos pedidos da secretaria no exercício selecionado</td></tr>
+  </tbody>
+</table>
+<p>É possível alternar entre os anos <strong>2024</strong>, <strong>2025</strong> e <strong>2026</strong> utilizando os botões de filtro no topo da seção. O filtro atualiza a tabela instantaneamente, exibindo apenas os dados do exercício selecionado.</p>
+
+<h2>2.6 Últimos Processos</h2>
+<p>A seção <strong>Últimos Processos</strong> exibe os processos mais recentes cadastrados no sistema, organizados em três abas conforme o tipo: <strong>Contratação</strong>, <strong>Contrato</strong> e <strong>Compra</strong>.</p>
+<table>
+  <thead><tr><th>Coluna</th><th>Descrição</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Contratação</strong></td><td>Número ou identificador do processo</td></tr>
+    <tr><td><strong>Tipo</strong></td><td>Modalidade do processo (ex.: Pregão, Dispensa, Inexigibilidade)</td></tr>
+    <tr><td><strong>Secretaria</strong></td><td>Unidade gestora demandante do processo</td></tr>
+    <tr><td><strong>Objeto</strong></td><td>Descrição resumida do bem ou serviço contratado</td></tr>
+    <tr><td><strong>Status</strong></td><td>Situação atual do processo (ex.: Em andamento, Concluído, Cancelado)</td></tr>
+    <tr><td><strong>Valor Total</strong></td><td>Valor estimado ou homologado do processo</td></tr>
+  </tbody>
+</table>
+<p>Clique na aba desejada para filtrar os processos pelo tipo. A lista exibe os registros mais recentes em ordem cronológica decrescente, facilitando o acompanhamento da atividade mais atual do órgão.</p>`;
+
+  pages[key] = { ...p, content: p.content + extra };
+  savePages();
+  scheduleGitHubSave();
+  console.log('[seed] Seções 2.4-2.6 do Dashboard adicionadas com sucesso');
+}
+
 if (GH_TOKEN) {
   loadFromGitHub().then(ghPages => {
     if (ghPages && Object.keys(ghPages).length > 0) {
@@ -154,6 +200,7 @@ if (GH_TOKEN) {
       savePages();
       console.log('[github] dados restaurados com sucesso');
     }
+    seedDashboardSections();
   });
   // Restaura whitelist do GitHub (filesystem do Render é efêmero)
   loadWhitelistFromGitHub().then(ghWl => {
@@ -164,6 +211,8 @@ if (GH_TOKEN) {
       console.log('[github] whitelist restaurada com sucesso');
     }
   });
+} else {
+  seedDashboardSections();
 }
 
 // ─── HTTP + Arquivos estáticos ─────────────────────────────────────────────
