@@ -195,6 +195,8 @@ html,body,#app{height:100%;overflow:hidden}
 .editor-content blockquote{border-left:3px solid #c7d2fe;padding-left:14px;color:#64748b;margin:8px 0}
 .editor-content pre{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 16px;font-family:monospace;font-size:13px;overflow-x:auto;margin:8px 0}
 .html-code-block{background:#0f172a;color:#e2e8f0;font-family:'Fira Code','Cascadia Code','Consolas',monospace;font-size:13px;line-height:1.7;padding:16px 20px;border-radius:10px;margin:8px 0;overflow-x:auto;white-space:pre-wrap;word-break:break-all;border:1px solid rgba(255,255,255,.08);display:block}
+.code-del-btn{background:none;border:none;color:#475569;font-size:15px;line-height:1;cursor:pointer;padding:2px 6px;border-radius:4px;margin-left:auto;transition:color .15s,background .15s;user-select:none}
+.code-del-btn:hover{color:#f87171;background:rgba(248,113,113,.12)}
 .editor-content hr{border:none;border-top:1px solid #e2e8f0;margin:16px 0}
 .editor-content img{max-width:100%;border-radius:8px;margin:8px 0;display:block}
 .editor-content img[src=""]{display:none}
@@ -1764,12 +1766,13 @@ function setupToolbar() {
 
       // Bloco estilo editor de código com syntax highlight
       const block = document.createElement('div');
+      block.setAttribute('data-code-block', '1');
       block.setAttribute('style',
         'background:#1e293b;border-radius:10px;margin:12px 0;overflow:hidden;' +
         'border:1px solid rgba(255,255,255,.07);display:block'
       );
 
-      // Cabeçalho com badge "HTML"
+      // Cabeçalho com badge "HTML" e botão de excluir
       const hdr = document.createElement('div');
       hdr.setAttribute('style',
         'background:rgba(255,255,255,.04);padding:5px 14px;display:flex;' +
@@ -1777,7 +1780,8 @@ function setupToolbar() {
       );
       hdr.innerHTML =
         '<span style="color:#64748b;font-size:11px;font-weight:600;letter-spacing:.05em;' +
-        'text-transform:uppercase;font-family:Inter,sans-serif">HTML</span>';
+        'text-transform:uppercase;font-family:Inter,sans-serif">HTML</span>' +
+        '<button class="code-del-btn" title="Apagar bloco de código" contenteditable="false">✕</button>';
 
       // Corpo com código realçado
       const body = document.createElement('div');
@@ -2267,6 +2271,15 @@ function setupImageInteraction() {
     if (e.target.tagName === 'IMG') {
       e.preventDefault(); // não cria cursor nativo; nossa toolbar faz a gestão
       showToolbar(e.target);
+    }
+    // Botão de excluir bloco de código
+    if (e.target.classList.contains('code-del-btn')) {
+      e.preventDefault();
+      const block = e.target.closest('[data-code-block]');
+      if (block && editor.contains(block)) {
+        block.remove();
+        savePage();
+      }
     }
   });
 
