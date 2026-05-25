@@ -482,6 +482,7 @@ document.getElementById('app').innerHTML = `
           <button class="tb-btn" id="tableBtn">⊞ Tabela</button>
           <button class="tb-btn" id="imgUploadTrigger"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Imagem</button>
           <input type="file" id="imgFileInput" accept="image/*" class="img-upload-btn"/>
+          <button class="tb-btn" id="htmlPasteBtn" title="Colar/inserir HTML renderizado"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg> HTML</button>
         </div>
 
         <!-- Image resize toolbar (shown on image click) -->
@@ -1602,6 +1603,60 @@ function setupToolbar() {
 
   document.getElementById('imgUploadTrigger').addEventListener('click', () => document.getElementById('imgFileInput').click());
   document.getElementById('imgFileInput').addEventListener('change', e => { const f = e.target.files[0]; if (f) insertImage(f); e.target.value = ''; });
+
+  // ── Colar HTML renderizado ───────────────────────────────────────────────
+  document.getElementById('htmlPasteBtn').addEventListener('click', () => {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.7);z-index:99999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)';
+    overlay.innerHTML = `
+      <div style="background:#fff;border-radius:16px;width:640px;max-width:96vw;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.35);overflow:hidden;font-family:Inter,sans-serif">
+        <div style="background:#2d3561;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+          <div style="color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            Inserir HTML
+          </div>
+          <button id="_htmlClose" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:20px;cursor:pointer;padding:2px 6px;border-radius:6px;line-height:1">✕</button>
+        </div>
+        <div style="padding:16px 20px 8px;flex-shrink:0;color:#64748b;font-size:12px">
+          Cole o código HTML abaixo. Ele será inserido renderizado no conteúdo da página.
+        </div>
+        <div style="padding:0 20px;flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0">
+          <textarea id="_htmlInput" spellcheck="false"
+            style="flex:1;width:100%;min-height:280px;border:1.5px solid #e2e8f0;border-radius:10px;padding:12px 14px;font-family:monospace;font-size:12.5px;line-height:1.6;color:#334155;resize:vertical;outline:none;box-sizing:border-box"
+            placeholder="<h2>Título</h2>\n<p>Parágrafo de exemplo...</p>"></textarea>
+        </div>
+        <div style="padding:14px 20px 18px;display:flex;gap:8px;justify-content:flex-end;flex-shrink:0">
+          <button id="_htmlCancel" style="border:1.5px solid #e2e8f0;background:#fff;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:600;color:#64748b;cursor:pointer">Cancelar</button>
+          <button id="_htmlInsert" style="background:#2d3561;color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer">Inserir</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+
+    const textarea = document.getElementById('_htmlInput');
+    // Pré-preenche com o HTML da seleção atual (se houver)
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+      const div = document.createElement('div');
+      div.appendChild(sel.getRangeAt(0).cloneContents());
+      if (div.innerHTML) textarea.value = div.innerHTML;
+    }
+    setTimeout(() => textarea.focus(), 50);
+
+    function doInsert() {
+      const html = textarea.value.trim();
+      if (!html) { overlay.remove(); return; }
+      editor.focus();
+      document.execCommand('insertHTML', false, html);
+      savePage();
+      overlay.remove();
+    }
+
+    document.getElementById('_htmlInsert').addEventListener('click', doInsert);
+    document.getElementById('_htmlCancel').addEventListener('click', () => overlay.remove());
+    document.getElementById('_htmlClose').addEventListener('click',  () => overlay.remove());
+    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+    textarea.addEventListener('keydown', e => { if (e.key === 'Escape') overlay.remove(); });
+  });
 }
 
 function insertImage(file) {
