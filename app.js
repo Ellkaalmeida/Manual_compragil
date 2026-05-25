@@ -922,12 +922,24 @@ function loadPage(pageKey) {
   const raw     = page?.content || '';
   const clean   = sanitizeContent(raw);
   editor.innerHTML = clean;
-  // Se havia imagens quebradas, salva automaticamente a versão limpa
-  if (clean !== raw) {
-    localPages[pageKey] = { ...page, content: clean };
+
+  // Migra <pre> com estilo inline escuro antigo → classe html-code-block
+  let migrated = false;
+  editor.querySelectorAll('pre[style]').forEach(p => {
+    if (p.style.background === 'rgb(15, 23, 42)' || (p.getAttribute('style')||'').includes('#0f172a')) {
+      p.className = 'html-code-block';
+      p.removeAttribute('style');
+      migrated = true;
+    }
+  });
+
+  // Se havia imagens quebradas ou blocos migrados, salva automaticamente
+  const finalContent = migrated ? editor.innerHTML : clean;
+  if (finalContent !== raw) {
+    localPages[pageKey] = { ...page, content: finalContent };
     saveLocalPages();
-    wsSend({ type: 'page_update', pageKey, title: page?.title || '', content: clean, icon: page?.icon || '📄', intro: page?.intro || '', links: page?.links || [] });
-    console.log('[sanitize] imagens com caminho relativo removidas de', pageKey);
+    wsSend({ type: 'page_update', pageKey, title: page?.title || '', content: finalContent, icon: page?.icon || '📄', intro: page?.intro || '', links: page?.links || [] });
+    console.log('[migrate] conteúdo atualizado em', pageKey);
   }
   title.value      = page?.title   || '';
   icon.textContent = page?.icon    || '📄';
