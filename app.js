@@ -1607,32 +1607,52 @@ function setupToolbar() {
   // ── Colar HTML renderizado ───────────────────────────────────────────────
   document.getElementById('htmlPasteBtn').addEventListener('click', () => {
     const overlay = document.createElement('div');
-    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.7);z-index:99999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.75);z-index:99999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)';
     overlay.innerHTML = `
-      <div style="background:#fff;border-radius:16px;width:640px;max-width:96vw;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.35);overflow:hidden;font-family:Inter,sans-serif">
-        <div style="background:#2d3561;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
-          <div style="color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-            Inserir HTML
+      <div style="background:#0f172a;border-radius:14px;width:780px;max-width:97vw;max-height:92vh;display:flex;flex-direction:column;box-shadow:0 32px 80px rgba(0,0,0,.6);overflow:hidden;font-family:Inter,sans-serif;border:1px solid rgba(255,255,255,.08)">
+
+        <!-- Barra de título estilo editor de código -->
+        <div style="background:#1e293b;padding:0 16px;display:flex;align-items:center;justify-content:space-between;height:44px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.07)">
+          <div style="display:flex;align-items:center;gap:10px">
+            <!-- Botões decorativos estilo macOS -->
+            <span style="width:12px;height:12px;border-radius:50%;background:#ef4444;display:inline-block"></span>
+            <span style="width:12px;height:12px;border-radius:50%;background:#f59e0b;display:inline-block"></span>
+            <span style="width:12px;height:12px;border-radius:50%;background:#22c55e;display:inline-block"></span>
+            <span style="margin-left:6px;color:#64748b;font-size:12px;font-weight:500">index.html</span>
           </div>
-          <button id="_htmlClose" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:20px;cursor:pointer;padding:2px 6px;border-radius:6px;line-height:1">✕</button>
+          <div style="display:flex;align-items:center;gap:6px;color:#475569;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            HTML
+          </div>
+          <button id="_htmlClose" style="background:rgba(255,255,255,.06);border:none;color:#94a3b8;font-size:16px;cursor:pointer;padding:4px 8px;border-radius:6px;line-height:1;transition:background .15s">✕</button>
         </div>
-        <div style="padding:16px 20px 8px;flex-shrink:0;color:#64748b;font-size:12px">
-          Cole o código HTML abaixo. Ele será inserido renderizado no conteúdo da página.
-        </div>
-        <div style="padding:0 20px;flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0">
+
+        <!-- Área do editor com numeração de linhas -->
+        <div style="flex:1;display:flex;overflow:hidden;min-height:0;position:relative">
+          <div id="_htmlLineNums" style="background:#0f172a;color:#334155;font-family:'Fira Code','Cascadia Code','Consolas',monospace;font-size:13px;line-height:1.7;padding:16px 12px 16px 16px;text-align:right;user-select:none;border-right:1px solid rgba(255,255,255,.06);min-width:44px;overflow:hidden;flex-shrink:0">1</div>
           <textarea id="_htmlInput" spellcheck="false"
-            style="flex:1;width:100%;min-height:280px;border:1.5px solid #e2e8f0;border-radius:10px;padding:12px 14px;font-family:monospace;font-size:12.5px;line-height:1.6;color:#334155;resize:vertical;outline:none;box-sizing:border-box"
-            placeholder="<h2>Título</h2>\n<p>Parágrafo de exemplo...</p>"></textarea>
+            style="flex:1;background:#0f172a;color:#e2e8f0;font-family:'Fira Code','Cascadia Code','Consolas',monospace;font-size:13px;line-height:1.7;padding:16px 20px;border:none;outline:none;resize:none;tab-size:2;overflow-y:auto;box-sizing:border-box;caret-color:#6366f1"
+            placeholder="<!-- Cole ou digite seu HTML aqui -->"></textarea>
         </div>
-        <div style="padding:14px 20px 18px;display:flex;gap:8px;justify-content:flex-end;flex-shrink:0">
-          <button id="_htmlCancel" style="border:1.5px solid #e2e8f0;background:#fff;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:600;color:#64748b;cursor:pointer">Cancelar</button>
-          <button id="_htmlInsert" style="background:#2d3561;color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer">Inserir</button>
+
+        <!-- Barra de status + ações -->
+        <div style="background:#1e293b;border-top:1px solid rgba(255,255,255,.07);padding:0 16px;height:44px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+          <span id="_htmlCharCount" style="color:#475569;font-size:11px;font-family:monospace">0 caracteres</span>
+          <div style="display:flex;gap:8px">
+            <button id="_htmlCancel" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:7px 16px;font-size:12px;font-weight:600;color:#94a3b8;cursor:pointer">Cancelar</button>
+            <button id="_htmlInsert" style="background:#6366f1;color:#fff;border:none;border-radius:7px;padding:7px 18px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Inserir renderizado
+            </button>
+          </div>
         </div>
       </div>`;
     document.body.appendChild(overlay);
 
-    const textarea = document.getElementById('_htmlInput');
+    const textarea  = document.getElementById('_htmlInput');
+    const lineNums  = document.getElementById('_htmlLineNums');
+    const charCount = document.getElementById('_htmlCharCount');
+
     // Pré-preenche com o HTML da seleção atual (se houver)
     const sel = window.getSelection();
     if (sel && sel.rangeCount > 0) {
@@ -1640,7 +1660,31 @@ function setupToolbar() {
       div.appendChild(sel.getRangeAt(0).cloneContents());
       if (div.innerHTML) textarea.value = div.innerHTML;
     }
-    setTimeout(() => textarea.focus(), 50);
+
+    function updateMeta() {
+      const lines = textarea.value.split('\n');
+      lineNums.innerHTML = lines.map((_, i) => i + 1).join('<br>');
+      charCount.textContent = textarea.value.length + ' caracteres · ' + lines.length + ' linhas';
+    }
+    updateMeta();
+
+    // Sincroniza scroll da numeração com o textarea
+    textarea.addEventListener('scroll', () => { lineNums.scrollTop = textarea.scrollTop; });
+    textarea.addEventListener('input', updateMeta);
+
+    // Tab insere 2 espaços
+    textarea.addEventListener('keydown', e => {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const s = textarea.selectionStart, end = textarea.selectionEnd;
+        textarea.value = textarea.value.substring(0, s) + '  ' + textarea.value.substring(end);
+        textarea.selectionStart = textarea.selectionEnd = s + 2;
+        updateMeta();
+      }
+      if (e.key === 'Escape') overlay.remove();
+    });
+
+    setTimeout(() => { textarea.focus(); textarea.setSelectionRange(textarea.value.length, textarea.value.length); }, 50);
 
     function doInsert() {
       const html = textarea.value.trim();
@@ -1655,7 +1699,6 @@ function setupToolbar() {
     document.getElementById('_htmlCancel').addEventListener('click', () => overlay.remove());
     document.getElementById('_htmlClose').addEventListener('click',  () => overlay.remove());
     overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
-    textarea.addEventListener('keydown', e => { if (e.key === 'Escape') overlay.remove(); });
   });
 }
 
