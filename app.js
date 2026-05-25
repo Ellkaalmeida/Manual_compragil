@@ -446,7 +446,6 @@ document.getElementById('app').innerHTML = `
           <button class="tb-btn" data-cmd="insertUnorderedList">• Lista</button>
           <button class="tb-btn" data-cmd="insertOrderedList">1. Num.</button>
           <button class="tb-btn" data-cmd="blockquote">❝ Citar</button>
-          <button class="tb-btn" data-cmd="pre">&lt;&gt; Código</button>
           <div class="tb-sep"></div>
           <div class="tb-color-wrap" id="tbColorWrap">
             <button class="tb-btn tb-color-apply" id="tbColorApply" title="Aplicar cor (última usada)">
@@ -484,7 +483,7 @@ document.getElementById('app').innerHTML = `
           <button class="tb-btn" id="tableBtn">⊞ Tabela</button>
           <button class="tb-btn" id="imgUploadTrigger"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Imagem</button>
           <input type="file" id="imgFileInput" accept="image/*" class="img-upload-btn"/>
-          <button class="tb-btn" id="htmlPasteBtn" title="Colar/inserir HTML renderizado"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg> HTML</button>
+          <button class="tb-btn" id="htmlPasteBtn" title="Inserir bloco de código HTML"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg> Código</button>
         </div>
 
         <!-- Image resize toolbar (shown on image click) -->
@@ -1653,7 +1652,7 @@ function setupToolbar() {
 
   // ── Colar HTML renderizado ───────────────────────────────────────────────
   document.getElementById('htmlPasteBtn').addEventListener('click', () => {
-    console.log('[HTML v36] modal aberto');
+    console.log('[Código v37] modal aberto');
     // Salva posição do cursor ANTES do modal abrir e roubar o foco
     let _insertRange = null;
     const selNow = window.getSelection();
