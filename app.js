@@ -197,6 +197,12 @@ html,body,#app{height:100%;overflow:hidden}
 .html-code-block{background:#0f172a;color:#e2e8f0;font-family:'Fira Code','Cascadia Code','Consolas',monospace;font-size:13px;line-height:1.7;padding:16px 20px;border-radius:10px;margin:8px 0;overflow-x:auto;white-space:pre-wrap;word-break:break-all;border:1px solid rgba(255,255,255,.08);display:block}
 .code-del-btn{background:none;border:none;color:#475569;font-size:15px;line-height:1;cursor:pointer;padding:2px 6px;border-radius:4px;margin-left:auto;transition:color .15s,background .15s;user-select:none}
 .code-del-btn:hover{color:#f87171;background:rgba(248,113,113,.12)}
+.editor-task{display:flex;align-items:flex-start;gap:8px;margin:3px 0;line-height:1.6}
+.task-cb{display:inline-flex;align-items:center;justify-content:center;width:15px;min-width:15px;height:15px;border:2px solid #94a3b8;border-radius:3px;cursor:pointer;margin-top:3px;transition:all .15s;user-select:none}
+.task-cb[data-checked="1"]{background:#6366f1;border-color:#6366f1}
+.task-cb[data-checked="1"]::after{content:'✓';color:#fff;font-size:10px;font-weight:700;line-height:1}
+.task-label{flex:1;min-width:0;outline:none}
+.task-label.done{color:#94a3b8;text-decoration:line-through}
 .editor-content hr{border:none;border-top:1px solid #e2e8f0;margin:16px 0}
 .editor-content img{max-width:100%;border-radius:8px;margin:8px 0;display:block}
 .editor-content img[src=""]{display:none}
@@ -448,6 +454,7 @@ document.getElementById('app').innerHTML = `
           <button class="tb-btn" data-cmd="insertUnorderedList">• Lista</button>
           <button class="tb-btn" data-cmd="insertOrderedList">1. Num.</button>
           <button class="tb-btn" data-cmd="blockquote">❝ Citar</button>
+          <button class="tb-btn" id="checkboxBtn" title="Inserir checkbox">☑ Check</button>
           <div class="tb-sep"></div>
           <div class="tb-color-wrap" id="tbColorWrap">
             <button class="tb-btn tb-color-apply" id="tbColorApply" title="Aplicar cor (última usada)">
@@ -1671,6 +1678,48 @@ function setupToolbar() {
   document.getElementById('imgUploadTrigger').addEventListener('click', () => document.getElementById('imgFileInput').click());
   document.getElementById('imgFileInput').addEventListener('change', e => { const f = e.target.files[0]; if (f) insertImage(f); e.target.value = ''; });
 
+  // ── Checkbox ─────────────────────────────────────────────────────────────
+  document.getElementById('checkboxBtn').addEventListener('mousedown', e => {
+    e.preventDefault();
+    // Salva o cursor antes do botão roubar o foco
+    const sel = window.getSelection();
+    let savedRange = null;
+    if (sel && sel.rangeCount > 0 && editor.contains(sel.anchorNode)) {
+      savedRange = sel.getRangeAt(0).cloneRange();
+    }
+    // Monta o elemento de tarefa
+    const task = document.createElement('div');
+    task.className = 'editor-task';
+    const cb = document.createElement('span');
+    cb.className = 'task-cb';
+    cb.setAttribute('contenteditable', 'false');
+    cb.setAttribute('data-checked', '0');
+    const lbl = document.createElement('span');
+    lbl.className = 'task-label';
+    lbl.innerHTML = '&#8203;';
+    task.appendChild(cb);
+    task.appendChild(lbl);
+    // Insere na posição do cursor
+    editor.focus();
+    if (savedRange) {
+      const s = window.getSelection();
+      s.removeAllRanges();
+      s.addRange(savedRange);
+      savedRange.deleteContents();
+      savedRange.insertNode(task);
+    } else {
+      editor.appendChild(task);
+    }
+    // Posiciona cursor dentro do label para o usuário digitar
+    const r = document.createRange();
+    r.setStart(lbl, 0);
+    r.collapse(true);
+    const s2 = window.getSelection();
+    s2.removeAllRanges();
+    s2.addRange(r);
+    savePage();
+  });
+
   // ── Colar HTML renderizado ───────────────────────────────────────────────
   document.getElementById('htmlPasteBtn').addEventListener('click', () => {
     console.log('[Código v37] modal aberto');
@@ -2280,6 +2329,17 @@ function setupImageInteraction() {
         block.remove();
         savePage();
       }
+    }
+    // Marcar / desmarcar checkbox
+    if (e.target.classList.contains('task-cb')) {
+      e.preventDefault();
+      const checked = e.target.dataset.checked === '1';
+      e.target.dataset.checked = checked ? '0' : '1';
+      const lbl = e.target.nextElementSibling;
+      if (lbl && lbl.classList.contains('task-label')) {
+        lbl.classList.toggle('done', !checked);
+      }
+      savePage();
     }
   });
 
