@@ -1668,18 +1668,13 @@ function setupToolbar() {
     overlay.innerHTML = `
       <div style="background:#0f172a;border-radius:14px;width:780px;max-width:97vw;max-height:92vh;display:flex;flex-direction:column;box-shadow:0 32px 80px rgba(0,0,0,.6);overflow:hidden;font-family:Inter,sans-serif;border:1px solid rgba(255,255,255,.08)">
 
-        <!-- Barra de título estilo editor de código -->
+        <!-- Barra de título -->
         <div style="background:#1e293b;padding:0 16px;display:flex;align-items:center;justify-content:space-between;height:44px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.07)">
           <div style="display:flex;align-items:center;gap:10px">
             <!-- Botões decorativos estilo macOS -->
             <span style="width:12px;height:12px;border-radius:50%;background:#ef4444;display:inline-block"></span>
             <span style="width:12px;height:12px;border-radius:50%;background:#f59e0b;display:inline-block"></span>
             <span style="width:12px;height:12px;border-radius:50%;background:#22c55e;display:inline-block"></span>
-            <span style="margin-left:6px;color:#64748b;font-size:12px;font-weight:500">index.html</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:6px;color:#475569;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-            HTML
           </div>
           <button id="_htmlClose" style="background:rgba(255,255,255,.06);border:none;color:#94a3b8;font-size:16px;cursor:pointer;padding:4px 8px;border-radius:6px;line-height:1;transition:background .15s">✕</button>
         </div>
