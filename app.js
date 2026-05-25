@@ -195,7 +195,8 @@ html,body,#app{height:100%;overflow:hidden}
 .editor-content hr{border:none;border-top:1px solid #e2e8f0;margin:16px 0}
 .editor-content img{max-width:100%;border-radius:8px;margin:8px 0;display:block}
 .editor-content img[src=""]{display:none}
-.editor-content a{color:#6366f1;text-decoration:underline}
+.editor-content a[href]{color:#6366f1;text-decoration:underline}
+.editor-content a:not([href]){color:inherit;text-decoration:none}
 .editor-content table{border-collapse:collapse;width:100%;margin:8px 0}
 .editor-content td,.editor-content th{border:1px solid #e2e8f0;padding:6px 10px;font-size:14px}
 .editor-content th{background:#f8fafc;font-weight:600}
@@ -1528,37 +1529,36 @@ function setupToolbar() {
     colorCustom.value = /^#[0-9a-f]{6}$/i.test(color) ? color : '#ef4444';
     colorPalette.classList.remove('open');
 
-    // Garante que o editor tem foco antes de restaurar a seleção
+    if (!_savedRange) return;
+
+    // Foca o editor e restaura a seleção salva
     editor.focus();
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(_savedRange.cloneRange());
 
-    if (_savedRange) {
-      const sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(_savedRange);
+    // Sempre usa <span style="color"> — mais confiável que execCommand
+    // e sobrescreve qualquer CSS herdado (ex: <a name> em headings)
+    const range = sel.getRangeAt(0);
+    const span  = document.createElement('span');
+    span.style.color = color;
+
+    try {
+      range.surroundContents(span);
+    } catch {
+      // Seleção cruza múltiplos nós (ex: parte de um <h2> e parágrafo)
+      const frag = range.extractContents();
+      span.appendChild(frag);
+      range.insertNode(span);
     }
 
-    // Tenta execCommand primeiro; se não funcionar (ex: heading), usa span inline
-    const applied = document.execCommand('foreColor', false, color);
-    if (!applied && _savedRange) {
-      const range = _savedRange.cloneRange();
-      const span  = document.createElement('span');
-      span.style.color = color;
-      try {
-        range.surroundContents(span);
-      } catch {
-        // Seleção parcial em múltiplos nós — extrai e envolve
-        const frag = range.extractContents();
-        span.appendChild(frag);
-        range.insertNode(span);
-      }
-      // Move cursor para após o span
-      const newRange = document.createRange();
-      newRange.setStartAfter(span);
-      newRange.collapse(true);
-      const sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(newRange);
-    }
+    // Posiciona cursor após o span
+    const after = document.createRange();
+    after.setStartAfter(span);
+    after.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(after);
+
     savePage();
   }
 
