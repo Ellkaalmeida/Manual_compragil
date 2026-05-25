@@ -1553,6 +1553,18 @@ function setupToolbar() {
     setTimeout(() => {
       const sel = window.getSelection();
       if (sel && sel.rangeCount > 0 && editor.contains(sel.anchorNode)) {
+        // Não exibe se o cursor estiver em elemento não-texto (imagem, bloco de código, checkbox)
+        const anchorEl = sel.anchorNode.nodeType === 3 ? sel.anchorNode.parentElement : sel.anchorNode;
+        if (
+          anchorEl.closest('[data-code-block]') ||
+          anchorEl.closest('img') ||
+          anchorEl.tagName === 'IMG' ||
+          anchorEl.classList.contains('task-cb')
+        ) {
+          toolbar.classList.remove('visible');
+          return;
+        }
+
         const range = sel.getRangeAt(0);
         let rect = range.getBoundingClientRect();
 
