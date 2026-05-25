@@ -99,8 +99,7 @@ html,body,#app{height:100%;overflow:hidden}
 .layout{display:flex;height:100vh;background:#f0f4f8}
 .sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:linear-gradient(180deg,#2d3561 0%,#242c58 100%);display:flex;flex-direction:column;transition:.3s;overflow:hidden}
 .sidebar.collapsed{width:56px;min-width:56px}
-.s-logo{padding:0 14px;display:flex;align-items:center;gap:10px;height:var(--top);min-height:var(--top);flex-shrink:0;cursor:pointer;user-select:none}
-.s-logo:hover{background:rgba(255,255,255,.05)}
+.s-logo{padding:0 14px;display:flex;align-items:center;gap:10px;height:var(--top);min-height:var(--top);flex-shrink:0}
 .sidebar.collapsed .s-logo{padding:0 0 0 9px}
 .toggle-btn{width:56px;min-width:56px;background:transparent;border:none;color:var(--sidebar-txt);cursor:pointer;height:100%;display:flex;align-items:center;justify-content:center;transition:background .2s;flex-shrink:0}
 .toggle-btn:hover{background:rgba(255,255,255,.08)}
@@ -414,6 +413,9 @@ document.getElementById('app').innerHTML = `
 
   <div class="main">
     <div class="topbar">
+      <button class="toggle-btn" id="toggleBtn" title="Recolher/expandir menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
       <span class="topbar-title">Manual Compra ágil Web</span>
       <span id="roleBadge" style="display:none"></span>
       <span style="flex:1"></span>
@@ -709,7 +711,7 @@ function saveNotes() {
 }
 
 function setupNotesDrawer() {
-  document.getElementById('logoIconBtn').addEventListener('click', e => { e.stopPropagation(); openNotesDrawer(); });
+  document.getElementById('logoIconBtn').addEventListener('click', openNotesDrawer);
   document.getElementById('notesOverlay').addEventListener('click', closeNotesDrawer);
   document.getElementById('notesCloseBtn').addEventListener('click', closeNotesDrawer);
   document.getElementById('notesSaveBtn').addEventListener('click', saveNotes);
@@ -1534,10 +1536,10 @@ function renderOnlineUsers(users) {
 
 // ─── Toggle sidebar ────────────────────────────────────────────────────────
 function setupToggle() {
-  const sb   = document.getElementById('sidebar');
-  const logo = sb.querySelector('.s-logo');
+  const sb  = document.getElementById('sidebar');
+  const btn = document.getElementById('toggleBtn');
 
-  logo.addEventListener('click', () => {
+  btn.addEventListener('click', () => {
     sb.classList.toggle('collapsed');
   });
 }
