@@ -183,6 +183,7 @@ html,body,#app{height:100%;overflow:hidden}
 .editor-content pre{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 16px;font-family:monospace;font-size:13px;overflow-x:auto;margin:8px 0}
 .editor-content hr{border:none;border-top:1px solid #e2e8f0;margin:16px 0}
 .editor-content img{max-width:100%;border-radius:8px;margin:8px 0;display:block}
+.editor-content img[src=""]{display:none}
 .editor-content a{color:#6366f1;text-decoration:underline}
 .editor-content table{border-collapse:collapse;width:100%;margin:8px 0}
 .editor-content td,.editor-content th{border:1px solid #e2e8f0;padding:6px 10px;font-size:14px}
@@ -854,12 +855,33 @@ function setSyncStatus(_connected) {
 }
 
 // ─── Páginas ───────────────────────────────────────────────────────────────
+// Remove imagens com src relativo (ex: image.png colado do Word) que não existem no servidor
+function sanitizeContent(html) {
+  if (!html) return '';
+  // Mantém apenas imagens base64 (data:) ou URLs absolutas (http/https)
+  return html.replace(/<img([^>]*)\ssrc="(?!data:|https?:\/\/)([^"]*)"([^>]*)>/gi, (match, pre, src, post) => {
+    // Se src está vazio já, esconde via CSS — não precisamos remover
+    if (!src || src.trim() === '') return match;
+    // Qualquer outro src relativo (image.png, ./img/foto.png, etc.) é removido
+    return '';
+  });
+}
+
 function loadPage(pageKey) {
   const page = localPages[pageKey];
   const editor = document.getElementById('editor');
   const title  = document.getElementById('pageTitle');
   const icon   = document.getElementById('iconBtn');
-  editor.innerHTML = page?.content || '';
+  const raw     = page?.content || '';
+  const clean   = sanitizeContent(raw);
+  editor.innerHTML = clean;
+  // Se havia imagens quebradas, salva automaticamente a versão limpa
+  if (clean !== raw) {
+    localPages[pageKey] = { ...page, content: clean };
+    saveLocalPages();
+    wsSend({ type: 'page_update', pageKey, title: page?.title || '', content: clean, icon: page?.icon || '📄', intro: page?.intro || '', links: page?.links || [] });
+    console.log('[sanitize] imagens com caminho relativo removidas de', pageKey);
+  }
   title.value      = page?.title   || '';
   icon.textContent = page?.icon    || '📄';
   title.style.height = 'auto';
