@@ -923,30 +923,12 @@ function loadPage(pageKey) {
   const clean   = sanitizeContent(raw);
   editor.innerHTML = clean;
 
-  // Migra <pre> com código HTML antigo → <div class="html-code-block">
-  let migrated = false;
-  editor.querySelectorAll('pre').forEach(p => {
-    const s = p.getAttribute('style') || '';
-    const bg = p.style.background || p.style.backgroundColor || '';
-    const isOldDark = s.includes('0f172a') || bg.includes('15, 23, 42') || bg.includes('0f172a');
-    const isCodeBlock = p.className === 'html-code-block';
-    if (isOldDark || isCodeBlock) {
-      // Substitui <pre> por <div class="html-code-block"> para evitar conflito CSS
-      const div = document.createElement('div');
-      div.className = 'html-code-block';
-      div.textContent = p.textContent;
-      p.parentNode.replaceChild(div, p);
-      migrated = true;
-    }
-  });
-
-  // Se havia imagens quebradas ou blocos migrados, salva automaticamente
-  const finalContent = migrated ? editor.innerHTML : clean;
-  if (finalContent !== raw) {
-    localPages[pageKey] = { ...page, content: finalContent };
+  // Se havia imagens quebradas, salva automaticamente a versão limpa
+  if (clean !== raw) {
+    localPages[pageKey] = { ...page, content: clean };
     saveLocalPages();
-    wsSend({ type: 'page_update', pageKey, title: page?.title || '', content: finalContent, icon: page?.icon || '📄', intro: page?.intro || '', links: page?.links || [] });
-    console.log('[migrate] conteúdo atualizado em', pageKey);
+    wsSend({ type: 'page_update', pageKey, title: page?.title || '', content: clean, icon: page?.icon || '📄', intro: page?.intro || '', links: page?.links || [] });
+    console.log('[sanitize] imagens com caminho relativo removidas de', pageKey);
   }
   title.value      = page?.title   || '';
   icon.textContent = page?.icon    || '📄';
@@ -1715,9 +1697,15 @@ function setupToolbar() {
       const html = textarea.value.trim();
       if (!html) { overlay.remove(); return; }
 
-      // Cria <div class="html-code-block"> — div evita conflito com CSS de <pre>
+      // Cria <div> com estilos inline diretos — mais confiável que classe CSS
       const block = document.createElement('div');
-      block.className = 'html-code-block';
+      block.setAttribute('style',
+        'background:#0f172a;color:#e2e8f0;' +
+        "font-family:'Fira Code',Consolas,monospace;" +
+        'font-size:13px;line-height:1.7;padding:16px 20px;' +
+        'border-radius:10px;margin:12px 0;overflow-x:auto;' +
+        'white-space:pre-wrap;word-break:break-all;display:block'
+      );
       block.textContent = html; // textContent → nunca interpreta o HTML como DOM
 
       editor.focus();
