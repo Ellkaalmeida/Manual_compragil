@@ -1606,6 +1606,11 @@ function setupToolbar() {
 
   // ── Colar HTML renderizado ───────────────────────────────────────────────
   document.getElementById('htmlPasteBtn').addEventListener('click', () => {
+    // Salva posição do cursor ANTES do modal abrir e roubar o foco
+    let _insertRange = null;
+    const selNow = window.getSelection();
+    if (selNow && selNow.rangeCount > 0) _insertRange = selNow.getRangeAt(0).cloneRange();
+
     const overlay = document.createElement('div');
     overlay.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.75);z-index:99999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)';
     overlay.innerHTML = `
@@ -1689,8 +1694,36 @@ function setupToolbar() {
     function doInsert() {
       const html = textarea.value.trim();
       if (!html) { overlay.remove(); return; }
+
+      // Cria fragmento DOM a partir do HTML
+      const temp = document.createElement('div');
+      temp.innerHTML = html;
+      const frag = document.createDocumentFragment();
+      let lastNode = null;
+      while (temp.firstChild) { lastNode = frag.appendChild(temp.firstChild); }
+
       editor.focus();
-      document.execCommand('insertHTML', false, html);
+
+      if (_insertRange) {
+        // Restaura cursor salvo e insere no local correto
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(_insertRange);
+        _insertRange.deleteContents();
+        _insertRange.insertNode(frag);
+        // Move cursor para depois do conteúdo inserido
+        if (lastNode) {
+          const r = document.createRange();
+          r.setStartAfter(lastNode);
+          r.collapse(true);
+          sel.removeAllRanges();
+          sel.addRange(r);
+        }
+      } else {
+        // Sem cursor salvo — acrescenta ao final do editor
+        editor.appendChild(frag);
+      }
+
       savePage();
       overlay.remove();
     }
