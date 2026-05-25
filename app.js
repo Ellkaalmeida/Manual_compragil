@@ -1526,20 +1526,46 @@ function setupToolbar() {
   function applyColor(color) {
     colorBar.style.background = color;
     colorCustom.value = /^#[0-9a-f]{6}$/i.test(color) ? color : '#ef4444';
-    // Restaura seleção e aplica cor
+    colorPalette.classList.remove('open');
+
+    // Garante que o editor tem foco antes de restaurar a seleção
+    editor.focus();
+
     if (_savedRange) {
       const sel = window.getSelection();
       sel.removeAllRanges();
       sel.addRange(_savedRange);
     }
-    document.execCommand('foreColor', false, color);
-    colorPalette.classList.remove('open');
+
+    // Tenta execCommand primeiro; se não funcionar (ex: heading), usa span inline
+    const applied = document.execCommand('foreColor', false, color);
+    if (!applied && _savedRange) {
+      const range = _savedRange.cloneRange();
+      const span  = document.createElement('span');
+      span.style.color = color;
+      try {
+        range.surroundContents(span);
+      } catch {
+        // Seleção parcial em múltiplos nós — extrai e envolve
+        const frag = range.extractContents();
+        span.appendChild(frag);
+        range.insertNode(span);
+      }
+      // Move cursor para após o span
+      const newRange = document.createRange();
+      newRange.setStartAfter(span);
+      newRange.collapse(true);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(newRange);
+    }
+    savePage();
   }
 
   document.getElementById('tbColorBtn').addEventListener('mousedown', e => {
     e.preventDefault();
     e.stopPropagation();
-    // Salva seleção antes do clique fechar
+    // Salva seleção antes de qualquer clique fora do editor
     const sel = window.getSelection();
     _savedRange = (sel && sel.rangeCount > 0) ? sel.getRangeAt(0).cloneRange() : null;
     colorPalette.classList.toggle('open');
@@ -1549,12 +1575,8 @@ function setupToolbar() {
     sw.addEventListener('mousedown', e => { e.preventDefault(); applyColor(sw.dataset.color); });
   });
 
-  colorCustom.addEventListener('input', e => { applyColor(e.target.value); });
-  colorCustom.addEventListener('mousedown', e => {
-    e.stopPropagation();
-    const sel = window.getSelection();
-    _savedRange = (sel && sel.rangeCount > 0) ? sel.getRangeAt(0).cloneRange() : null;
-  });
+  colorCustom.addEventListener('change', e => { applyColor(e.target.value); });
+  colorCustom.addEventListener('mousedown', e => { e.stopPropagation(); });
 
   document.addEventListener('mousedown', e => {
     const wrap = document.getElementById('tbColorWrap');
