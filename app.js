@@ -1,6 +1,7 @@
 // ════════════════════════════════════════════════════════════════════════════
 //  COMPRÁGIL — Colaborativo com WebSocket puro (sem dependências externas)
 // ════════════════════════════════════════════════════════════════════════════
+console.log('%c COMPRÁGIL app.js v=36 carregado ✓', 'background:#6366f1;color:#fff;padding:4px 10px;border-radius:4px;font-weight:bold');
 
 // Captura qualquer erro JS e exibe na tela (debug em file://)
 window.onerror = function(msg, src, line, col, err) {
@@ -1652,10 +1653,16 @@ function setupToolbar() {
 
   // ── Colar HTML renderizado ───────────────────────────────────────────────
   document.getElementById('htmlPasteBtn').addEventListener('click', () => {
+    console.log('[HTML v36] modal aberto');
     // Salva posição do cursor ANTES do modal abrir e roubar o foco
     let _insertRange = null;
     const selNow = window.getSelection();
-    if (selNow && selNow.rangeCount > 0) _insertRange = selNow.getRangeAt(0).cloneRange();
+    if (selNow && selNow.rangeCount > 0) {
+      _insertRange = selNow.getRangeAt(0).cloneRange();
+      console.log('[HTML v36] range capturado:', _insertRange.startOffset);
+    } else {
+      console.log('[HTML v36] sem range — vai inserir no fim do editor');
+    }
 
     const overlay = document.createElement('div');
     overlay.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.75);z-index:99999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)';
@@ -1739,6 +1746,7 @@ function setupToolbar() {
 
     function doInsert() {
       const html = textarea.value.trim();
+      console.log('[HTML v36] doInsert, html len:', html.length, 'range:', !!_insertRange);
       if (!html) { overlay.remove(); return; }
 
       // Bloco estilo editor de código com syntax highlight
