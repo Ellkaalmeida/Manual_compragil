@@ -1695,14 +1695,9 @@ function setupToolbar() {
       const html = textarea.value.trim();
       if (!html) { overlay.remove(); return; }
 
-      // Escapa o HTML e cria bloco de código estilo dark (igual ao modal)
-      const escaped = html
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
-
+      // Cria bloco <pre> escuro estilo código — textContent evita interpretar o HTML
       const pre = document.createElement('pre');
-      pre.setAttribute('style', [
+      pre.style.cssText = [
         'background:#0f172a',
         'color:#e2e8f0',
         "font-family:'Fira Code','Cascadia Code','Consolas',monospace",
@@ -1714,28 +1709,31 @@ function setupToolbar() {
         'overflow-x:auto',
         'white-space:pre-wrap',
         'word-break:break-all',
-        'border:1px solid rgba(255,255,255,.08)'
-      ].join(';'));
-      pre.innerHTML = escaped;
+        'border:1px solid rgba(255,255,255,.08)',
+        'display:block'
+      ].join(';');
+      // textContent = texto puro; o browser faz o escape automaticamente
+      pre.textContent = html;
+
+      // Envolve em div para garantir bloco separado no contenteditable
+      const wrapper = document.createElement('div');
+      wrapper.appendChild(pre);
 
       editor.focus();
 
       if (_insertRange) {
-        // Restaura cursor salvo e insere no local correto
         const sel = window.getSelection();
         sel.removeAllRanges();
         sel.addRange(_insertRange);
         _insertRange.deleteContents();
-        _insertRange.insertNode(pre);
-        // Move cursor para depois do bloco inserido
+        _insertRange.insertNode(wrapper);
         const r = document.createRange();
-        r.setStartAfter(pre);
+        r.setStartAfter(wrapper);
         r.collapse(true);
         sel.removeAllRanges();
         sel.addRange(r);
       } else {
-        // Sem cursor salvo — acrescenta ao final do editor
-        editor.appendChild(pre);
+        editor.appendChild(wrapper);
       }
 
       savePage();
