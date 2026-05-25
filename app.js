@@ -2046,6 +2046,14 @@ function setupImageInteraction() {
     if (!toolbar.contains(e.target)) hideToolbar();
   });
 
+  // Evita cursor nativo antes/depois da imagem ao clicar — impede "primeiro Delete em branco"
+  editor.addEventListener('mousedown', e => {
+    if (e.target.tagName === 'IMG') {
+      e.preventDefault(); // não cria cursor nativo; nossa toolbar faz a gestão
+      showToolbar(e.target);
+    }
+  });
+
   const range = document.getElementById('_itRange');
   range.addEventListener('input', () => {
     if (!selectedImg) return;
@@ -2081,6 +2089,14 @@ function setupImageInteraction() {
     savePage();
   });
 
+  function deleteSelectedImg() {
+    if (!selectedImg) return;
+    const imgToRemove = selectedImg;
+    hideToolbar();
+    imgToRemove.remove();
+    savePage();
+  }
+
   document.getElementById('_itDelete').addEventListener('click', () => {
     if (!selectedImg) return;
     const imgToRemove = selectedImg;
@@ -2090,6 +2106,16 @@ function setupImageInteraction() {
       confirmLabel: 'Remover',
       onConfirm: () => { imgToRemove.remove(); hideToolbar(); savePage(); }
     });
+  });
+
+  // Delete/Backspace com imagem selecionada — remove na primeira tecla
+  document.addEventListener('keydown', e => {
+    if (!selectedImg) return;
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+      e.preventDefault();
+      deleteSelectedImg();
+    }
+    if (e.key === 'Escape') hideToolbar();
   });
 
   document.addEventListener('mousedown', e => {
