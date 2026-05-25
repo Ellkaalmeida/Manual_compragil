@@ -193,7 +193,7 @@ html,body,#app{height:100%;overflow:hidden}
 .editor-content li{margin:2px 0}
 .editor-content blockquote{border-left:3px solid #c7d2fe;padding-left:14px;color:#64748b;margin:8px 0}
 .editor-content pre{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 16px;font-family:monospace;font-size:13px;overflow-x:auto;margin:8px 0}
-.editor-content pre.html-code-block{background:#0f172a!important;color:#e2e8f0!important;font-family:'Fira Code','Cascadia Code','Consolas',monospace!important;font-size:13px!important;line-height:1.7!important;padding:16px 20px!important;border-radius:10px!important;margin:8px 0!important;overflow-x:auto!important;white-space:pre-wrap!important;word-break:break-all!important;border:1px solid rgba(255,255,255,.08)!important;display:block!important}
+.html-code-block{background:#0f172a;color:#e2e8f0;font-family:'Fira Code','Cascadia Code','Consolas',monospace;font-size:13px;line-height:1.7;padding:16px 20px;border-radius:10px;margin:8px 0;overflow-x:auto;white-space:pre-wrap;word-break:break-all;border:1px solid rgba(255,255,255,.08);display:block}
 .editor-content hr{border:none;border-top:1px solid #e2e8f0;margin:16px 0}
 .editor-content img{max-width:100%;border-radius:8px;margin:8px 0;display:block}
 .editor-content img[src=""]{display:none}
@@ -923,12 +923,19 @@ function loadPage(pageKey) {
   const clean   = sanitizeContent(raw);
   editor.innerHTML = clean;
 
-  // Migra <pre> com estilo inline escuro antigo → classe html-code-block
+  // Migra <pre> com código HTML antigo → <div class="html-code-block">
   let migrated = false;
-  editor.querySelectorAll('pre[style]').forEach(p => {
-    if (p.style.background === 'rgb(15, 23, 42)' || (p.getAttribute('style')||'').includes('#0f172a')) {
-      p.className = 'html-code-block';
-      p.removeAttribute('style');
+  editor.querySelectorAll('pre').forEach(p => {
+    const s = p.getAttribute('style') || '';
+    const bg = p.style.background || p.style.backgroundColor || '';
+    const isOldDark = s.includes('0f172a') || bg.includes('15, 23, 42') || bg.includes('0f172a');
+    const isCodeBlock = p.className === 'html-code-block';
+    if (isOldDark || isCodeBlock) {
+      // Substitui <pre> por <div class="html-code-block"> para evitar conflito CSS
+      const div = document.createElement('div');
+      div.className = 'html-code-block';
+      div.textContent = p.textContent;
+      p.parentNode.replaceChild(div, p);
       migrated = true;
     }
   });
@@ -1708,10 +1715,10 @@ function setupToolbar() {
       const html = textarea.value.trim();
       if (!html) { overlay.remove(); return; }
 
-      // Cria <pre class="html-code-block"> com o código como texto puro
-      const pre = document.createElement('pre');
-      pre.className = 'html-code-block';
-      pre.textContent = html; // textContent → nunca interpreta o HTML como DOM
+      // Cria <div class="html-code-block"> — div evita conflito com CSS de <pre>
+      const block = document.createElement('div');
+      block.className = 'html-code-block';
+      block.textContent = html; // textContent → nunca interpreta o HTML como DOM
 
       editor.focus();
 
@@ -1720,14 +1727,14 @@ function setupToolbar() {
         sel.removeAllRanges();
         sel.addRange(_insertRange);
         _insertRange.deleteContents();
-        _insertRange.insertNode(pre);
+        _insertRange.insertNode(block);
         const r = document.createRange();
-        r.setStartAfter(pre);
+        r.setStartAfter(block);
         r.collapse(true);
         sel.removeAllRanges();
         sel.addRange(r);
       } else {
-        editor.appendChild(pre);
+        editor.appendChild(block);
       }
 
       savePage();
