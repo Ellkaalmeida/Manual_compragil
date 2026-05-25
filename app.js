@@ -1531,33 +1531,41 @@ function setupToolbar() {
 
     if (!_savedRange) return;
 
-    // Foca o editor e restaura a seleção salva
+    // Foca e restaura seleção
     editor.focus();
     const sel = window.getSelection();
     sel.removeAllRanges();
     sel.addRange(_savedRange.cloneRange());
 
-    // Sempre usa <span style="color"> — mais confiável que execCommand
-    // e sobrescreve qualquer CSS herdado (ex: <a name> em headings)
-    const range = sel.getRangeAt(0);
-    const span  = document.createElement('span');
-    span.style.color = color;
+    // Verifica se a seleção está dentro de <a name="..."> (heading do Word)
+    // onde o CSS sobrescreve cores — nesses casos usa span manual
+    let ancestor = _savedRange.commonAncestorContainer;
+    if (ancestor.nodeType === 3) ancestor = ancestor.parentNode;
+    const inNameAnchor = ancestor.closest && ancestor.closest('a:not([href])');
 
-    try {
-      range.surroundContents(span);
-    } catch {
-      // Seleção cruza múltiplos nós (ex: parte de um <h2> e parágrafo)
-      const frag = range.extractContents();
-      span.appendChild(frag);
-      range.insertNode(span);
+    if (inNameAnchor) {
+      // Span manual para headings com âncora — garante que CSS não sobrescreve
+      const range = sel.getRangeAt(0);
+      const span  = document.createElement('span');
+      span.style.color = color;
+      try {
+        range.surroundContents(span);
+      } catch {
+        const frag = range.extractContents();
+        span.appendChild(frag);
+        range.insertNode(span);
+      }
+      const after = document.createRange();
+      after.setStartAfter(span);
+      after.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(after);
+    } else {
+      // execCommand com styleWithCSS — cria <span style="color"> e respeita
+      // formatações existentes (negrito, sublinhado, itálico, etc.)
+      document.execCommand('styleWithCSS', false, true);
+      document.execCommand('foreColor', false, color);
     }
-
-    // Posiciona cursor após o span
-    const after = document.createRange();
-    after.setStartAfter(span);
-    after.collapse(true);
-    sel.removeAllRanges();
-    sel.addRange(after);
 
     savePage();
   }
