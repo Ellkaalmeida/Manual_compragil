@@ -901,6 +901,50 @@ function setSyncStatus(_connected) {
   // indicador removido da UI — função mantida para não quebrar chamadas existentes
 }
 
+// ─── Syntax highlight HTML ────────────────────────────────────────────────
+function highlightHTML(code) {
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const T='#93c5fd', A='#86efac', V='#fca5a5', P='#94a3b8', C='#475569';
+  let out = '', i = 0;
+  while (i < code.length) {
+    if (code[i] === '<') {
+      let j = i+1, inQ=false, qCh='';
+      while (j < code.length) {
+        if (!inQ && (code[j]==='"'||code[j]==="'")) { inQ=true; qCh=code[j]; }
+        else if (inQ && code[j]===qCh) { inQ=false; }
+        else if (!inQ && code[j]==='>') { j++; break; }
+        j++;
+      }
+      const tag = code.slice(i, j);
+      if (tag.startsWith('<!--')) { out+=`<span style="color:${C}">${esc(tag)}</span>`; i=j; continue; }
+      let r='', k=0, close=tag[1]==='/';
+      r += `<span style="color:${P}">&lt;${close?'/':''}</span>`; k=close?2:1;
+      let tName=''; while(k<tag.length&&!/[\s\/>]/.test(tag[k])) tName+=tag[k++];
+      r += `<span style="color:${T}">${esc(tName)}</span>`;
+      while (k < tag.length) {
+        if (tag[k]==='>'||(tag[k]==='/'&&tag[k+1]==='>')) break;
+        if (/\s/.test(tag[k])) { r+=tag[k++]; continue; }
+        let aN=''; while(k<tag.length&&!/[\s=\/>]/.test(tag[k])) aN+=tag[k++];
+        if (aN) r+=`<span style="color:${A}">${esc(aN)}</span>`;
+        if (tag[k]==='=') {
+          r+='='; k++;
+          if (k<tag.length&&(tag[k]==='"'||tag[k]==="'")) {
+            const q=tag[k++]; let v=q; while(k<tag.length&&tag[k]!==q) v+=tag[k++];
+            if(k<tag.length) v+=tag[k++];
+            r+=`<span style="color:${V}">${esc(v)}</span>`;
+          }
+        }
+      }
+      r += tag[k]==='/'?`<span style="color:${P}">/&gt;</span>`:`<span style="color:${P}">&gt;</span>`;
+      out+=r; i=j;
+    } else {
+      let j=i; while(j<code.length&&code[j]!=='<') j++;
+      out+=esc(code.slice(i,j)); i=j;
+    }
+  }
+  return out;
+}
+
 // ─── Páginas ───────────────────────────────────────────────────────────────
 // Remove imagens com src relativo (ex: image.png colado do Word) que não existem no servidor
 function sanitizeContent(html) {
@@ -1697,16 +1741,34 @@ function setupToolbar() {
       const html = textarea.value.trim();
       if (!html) { overlay.remove(); return; }
 
-      // Cria <div> com estilos inline diretos — mais confiável que classe CSS
+      // Bloco estilo editor de código com syntax highlight
       const block = document.createElement('div');
       block.setAttribute('style',
-        'background:#0f172a;color:#e2e8f0;' +
-        "font-family:'Fira Code',Consolas,monospace;" +
-        'font-size:13px;line-height:1.7;padding:16px 20px;' +
-        'border-radius:10px;margin:12px 0;overflow-x:auto;' +
-        'white-space:pre-wrap;word-break:break-all;display:block'
+        'background:#1e293b;border-radius:10px;margin:12px 0;overflow:hidden;' +
+        'border:1px solid rgba(255,255,255,.07);display:block'
       );
-      block.textContent = html; // textContent → nunca interpreta o HTML como DOM
+
+      // Cabeçalho com badge "HTML"
+      const hdr = document.createElement('div');
+      hdr.setAttribute('style',
+        'background:rgba(255,255,255,.04);padding:5px 14px;display:flex;' +
+        'align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,.06)'
+      );
+      hdr.innerHTML =
+        '<span style="color:#64748b;font-size:11px;font-weight:600;letter-spacing:.05em;' +
+        'text-transform:uppercase;font-family:Inter,sans-serif">HTML</span>';
+
+      // Corpo com código realçado
+      const body = document.createElement('div');
+      body.setAttribute('style',
+        "font-family:'Fira Code','Cascadia Code',Consolas,monospace;" +
+        'font-size:13px;line-height:1.7;padding:16px 20px;' +
+        'overflow-x:auto;white-space:pre-wrap;word-break:break-all;color:#e2e8f0'
+      );
+      body.innerHTML = highlightHTML(html); // syntax highlight sem interpretar tags
+
+      block.appendChild(hdr);
+      block.appendChild(body);
 
       editor.focus();
 
