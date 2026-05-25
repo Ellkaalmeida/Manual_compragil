@@ -165,8 +165,9 @@ html,body,#app{height:100%;overflow:hidden}
 .page-title-input::placeholder{color:#cbd5e1}
 .toolbar{position:fixed;background:#1e293b;border-radius:8px;padding:4px 6px;display:none;align-items:center;gap:2px;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.25)}
 .toolbar.visible{display:flex}
-.tb-color-wrap{position:relative}
-.tb-color-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 7px!important}
+.tb-color-wrap{position:relative;display:flex;align-items:center}
+.tb-color-apply{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 6px!important;border-radius:6px 0 0 6px!important}
+.tb-color-toggle{padding:4px 4px!important;font-size:9px!important;border-radius:0 6px 6px 0!important;border-left:1px solid rgba(255,255,255,.1)!important}
 .tb-color-bar{display:block;width:14px;height:3px;border-radius:2px;background:#ef4444;transition:background .15s}
 .tb-color-palette{position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#1e293b;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:10px;display:none;z-index:10001;box-shadow:0 8px 32px rgba(0,0,0,.4);width:170px}
 .tb-color-palette.open{display:block}
@@ -446,10 +447,11 @@ document.getElementById('app').innerHTML = `
           <button class="tb-btn" data-cmd="pre">&lt;&gt; Código</button>
           <div class="tb-sep"></div>
           <div class="tb-color-wrap" id="tbColorWrap">
-            <button class="tb-btn tb-color-btn" id="tbColorBtn" title="Cor do texto">
+            <button class="tb-btn tb-color-apply" id="tbColorApply" title="Aplicar cor (última usada)">
               <span style="font-weight:700;font-size:13px;line-height:1">A</span>
               <span class="tb-color-bar" id="tbColorBar"></span>
             </button>
+            <button class="tb-btn tb-color-toggle" id="tbColorToggle" title="Escolher cor">▾</button>
             <div class="tb-color-palette" id="tbColorPalette">
               <div class="tb-color-grid">
                 <span class="tb-swatch" data-color="#000000" style="background:#000000" title="Preto"></span>
@@ -1520,47 +1522,62 @@ function setupToolbar() {
 
   // ── Seletor de cor do texto ──────────────────────────────────────────────
   let _savedRange = null;
+  let _lastColor  = '#ef4444';
   const colorBar     = document.getElementById('tbColorBar');
   const colorPalette = document.getElementById('tbColorPalette');
   const colorCustom  = document.getElementById('tbColorCustom');
 
+  function saveRange() {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) _savedRange = sel.getRangeAt(0).cloneRange();
+  }
+
   function applyColor(color) {
+    _lastColor = color;
     colorBar.style.background = color;
-    colorCustom.value = /^#[0-9a-f]{6}$/i.test(color) ? color : '#ef4444';
+    if (/^#[0-9a-f]{6}$/i.test(color)) colorCustom.value = color;
     colorPalette.classList.remove('open');
 
     if (!_savedRange) return;
 
-    // Foca e restaura seleção
     editor.focus();
     const sel = window.getSelection();
     sel.removeAllRanges();
     sel.addRange(_savedRange.cloneRange());
 
-    // styleWithCSS=true → gera <span style="color:..."> (não <font color>)
-    // Funciona com qualquer formatação (negrito, sublinhado, heading, etc.)
-    // CSS já corrigido: a:not([href]){color:inherit} — sem conflito
     document.execCommand('styleWithCSS', false, true);
     document.execCommand('foreColor', false, color);
 
     savePage();
   }
 
-  document.getElementById('tbColorBtn').addEventListener('mousedown', e => {
+  // Botão A — aplica a última cor diretamente sem abrir a paleta
+  document.getElementById('tbColorApply').addEventListener('mousedown', e => {
     e.preventDefault();
     e.stopPropagation();
-    // Salva seleção antes de qualquer clique fora do editor
-    const sel = window.getSelection();
-    _savedRange = (sel && sel.rangeCount > 0) ? sel.getRangeAt(0).cloneRange() : null;
+    saveRange();
+    applyColor(_lastColor);
+  });
+
+  // Botão ▾ — abre/fecha a paleta de cores
+  document.getElementById('tbColorToggle').addEventListener('mousedown', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    saveRange();
     colorPalette.classList.toggle('open');
   });
 
+  // Swatches da paleta
   document.querySelectorAll('.tb-swatch').forEach(sw => {
     sw.addEventListener('mousedown', e => { e.preventDefault(); applyColor(sw.dataset.color); });
   });
 
+  // Cor personalizada — salva range antes do picker nativo abrir (troca de foco)
+  colorCustom.addEventListener('mousedown', e => {
+    e.stopPropagation();
+    saveRange(); // garante que _savedRange está atualizado antes do picker nativo tomar o foco
+  });
   colorCustom.addEventListener('change', e => { applyColor(e.target.value); });
-  colorCustom.addEventListener('mousedown', e => { e.stopPropagation(); });
 
   document.addEventListener('mousedown', e => {
     const wrap = document.getElementById('tbColorWrap');
