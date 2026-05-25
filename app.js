@@ -1543,17 +1543,36 @@ function setupToolbar() {
   document.addEventListener('mouseup', () => {
     setTimeout(() => {
       const sel = window.getSelection();
-      if (sel && sel.toString().trim().length > 0 && editor.contains(sel.anchorNode)) {
-        const rect = sel.getRangeAt(0).getBoundingClientRect();
-        toolbar.style.top  = (rect.top - 48 + window.scrollY) + 'px';
-        toolbar.style.left = Math.max(8, rect.left + rect.width / 2 - 220) + 'px';
+      if (sel && sel.rangeCount > 0 && editor.contains(sel.anchorNode)) {
+        const range = sel.getRangeAt(0);
+        let rect = range.getBoundingClientRect();
+
+        // Fallback para cursor colapsado (sem seleção): usa o elemento pai
+        if (!rect.height) {
+          const node = sel.anchorNode;
+          const el = node.nodeType === 3 ? node.parentElement : node;
+          rect = el ? el.getBoundingClientRect() : rect;
+        }
+
+        // Posição horizontal: centraliza sobre a seleção ou sobre o editor
+        const edRect = editor.getBoundingClientRect();
+        const cx = rect.width > 0
+          ? rect.left + rect.width / 2
+          : edRect.left + edRect.width / 2;
+
+        toolbar.style.top  = Math.max(8, rect.top - 48 + window.scrollY) + 'px';
+        toolbar.style.left = Math.max(8, cx - 220) + 'px';
         toolbar.classList.add('visible');
       } else {
         toolbar.classList.remove('visible');
       }
     }, 10);
   });
-  document.addEventListener('mousedown', e => { if (!toolbar.contains(e.target)) toolbar.classList.remove('visible'); });
+  document.addEventListener('mousedown', e => {
+    if (!toolbar.contains(e.target) && !editor.contains(e.target)) {
+      toolbar.classList.remove('visible');
+    }
+  });
 
   document.querySelectorAll('.tb-btn[data-cmd]').forEach(btn => {
     btn.addEventListener('mousedown', e => {
